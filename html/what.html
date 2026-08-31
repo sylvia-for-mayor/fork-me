@@ -1,1 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Torture Tutor</title>
+	<style>
+		body {
+			margin: 0;
+			overflow: hidden;
+			background: #8A0303;
+			font-family: sans-serif;
+			color: #ffffff;
+			user-select: none;
+		}
+		#game-container{
+			position: relative; 
+			/* Keeps all moving items inside this box */
+			width: 100%;
+			max-right: calc(100% - 0px);
+			margin-left:  0px;
+			/* game area is exactly 600px tall */
+			height: 600px;
+			/* Prevents moving items spilling out */
+			overflow: hidden;
+			background: #00000;
+		}
+		#user-score {
+			display: block;
+			margin-top: 20px;
+			margin-left: 20px;
+			font-size: 24px;
+			z-index: 10;
+		}
+		img {
+			display: block;
+			margin-left: 20px;
+			margin-top: 15px;
+			width: 50%;
+			margin: 0 auto;
+		}
+		.falling-letter {
+			position: absolute;
+			top: -50px;
+			font-size: 48px;
+			font-weight: bold;
+			color: #ffffff;
+			text-shadow: 0 0 10px #00ffcc;
+			transform: translateX(-50%);
+		}
+		.hidden {
+			display: none;
+		}
+	</style>
+</head>
+<body>
+	<!-- ************HTML SECTION************ -->
+	<div id="user-score">
+		You: <span id="score">0</span> 
+		</br>Toaster: <span id="misses">0</span>
+		<div id="gremlin">Gremlin: <span id="output">0</span></div>
+	<div id="game-container">
+	</div>
+	<div>
+		<img src="../img/keyboard.png" id="keyboard" alt="keyboard">
+		<div>
+		<span id="div_a" class="letter">A</span>
+		</div>
+	</div>
+	<button onclick="toggleDiv()"> DO IT </button
+	
+	<!-- SCRIPTING -->
+	<script>
+		const container = 
+			document.getElementById('game-container');
+		const scoreEl = 
+			document.getElementById('score');
+		const missesEl = 
+			document.getElementById('misses');
+		const outputEl = 
+			document.getElementById('output');
+		const keyboardEl = 
+			document.getElementById('keyboard');
+
+		let score = 0;
+		let misses = 0;
+		let bottomY = 0;
+		let activeLetters = [];
+
+		let randomLetter = ' ';
+		/* now for the keyboard magic */
+		const showChar = true;
+
+		let isPaused = false;
+		const createLetterInterval = 1000;
+		const updateGameInterval = 20;
+
+		function createLetter() {
+			if (isPaused) return;
+			else if (!isPaused){
+	
+					
+				/* fight the urge to play it on 
+				 forward because the browser is a
+				 rat bastard with a tiny penis */
+					/* WTH? */
+
+
+
+				/* logic to randomize letter choice
+				with upper lower numbers and symbols
+				into a single array for random choice */
+				const upperCase = 
+					'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+				const lowerCase = 
+				'abcdefghijklmnopkqrstuvwxyz';
+				const symbols = 
+					'!@#$%^&*()_+[]{}\/|-<>?;:~';  
+				const numbers = '1234567890';
+				const matrix = [
+					upperCase, lowerCase, 
+					symbols, numbers
+				];
+				/* randomize which array to choose */
+				const which = Math.floor(
+					Math.random() 
+					* matrix.length
+				);
+				const row = matrix[which];
+
+
+				/* randomize element from 
+				   that specific array */
+				const index = Math.floor(
+					Math.random() * row.length
+				);
+				const element = row[index];
+
+				/* assign the actual element just 
+				randomized to randomLetter */
+				randomLetter = element;
+				let char = randomLetter;
+				outputEl.innerText=randomLetter;
+			
+
+				const el = document.createElement('div');
+				el.classList.add('falling-letter');
+				el.innerText = randomLetter;
+            
+				const xPos = Math.random() 
+					* (window.innerWidth - 100) + 50;
+				el.style.left = `${xPos}px`;
+				const letterObj = {
+					element: el,
+					char: char,
+					y: -50,
+					speed: Math.random() * 2 + 1.5
+				};
+
+				container.appendChild(el);
+				activeLetters.push(letterObj);
+			} //end if !isPaused
+		} //end createLetter()
+
+		function updateGame() {
+			if (isPaused)
+				return;
+			else if (!isPaused) {
+				if ( misses >= 10 ) {
+					resetGame();
+				}	
+				/* get a better value than l.y 
+				  for the pain point */
+			
+				for (let i = activeLetters.length - 1; 
+				  i >= 0; i--) {
+					let l = activeLetters[i];
+					l.y += l.speed;
+					l.element.style.top = `${l.y}px`;
+
+					/* Here is where the letter 
+					  passes the point of 
+				  	  catching it with a key press */
+				
+					if (l.y > bottomY) {
+						let computedY = 0;
+						if (l.el) {
+							computedY = 
+							l.el.style.left;
+						} else {
+							computedY = 
+						        l.y || 'N/A';
+						}
+						const realY  = 
+						Math.floor(computedY);
+						//console.log("Y position: ", realY);
+						l.element.remove();
+						activeLetters.splice(i, 1);
+						misses++;
+						missesEl.innerText = misses;
+					} //end if(l.y > bottomY)
+				}//end for i
+			} //end if !isPaused
+		}//end updateGame
+
+		function pauseGame(){
+			isPaused = true;
+		}
+		function resumeGame() {
+			isPaused = false;
+		}
+		function resetGame() {
+			score = 0;
+			misses = 0;
+		}
+
+		window.addEventListener('keydown', (e) => {
+			const keyPressed = e.key;
+			const index = activeLetters.
+				findIndex(l => l.char === keyPressed);
+			if (index !== -1) {
+				activeLetters[index].element.remove();
+				activeLetters.splice(index, 1);
+				score++;
+				scoreEl.innerText = score;
+			} // end if (index !== -1)
+		}); //end eventListener keydown
+
+		window.addEventListener('load', () => {
+			const keyboard = document.getElementById('keyboard');
+			let rect;
+			if (keyboard) {
+				rect = keyboard.getBoundingClientRect();
+			}
+			bottomY = rect.top;
+		});
+		window.addEventListener('visibilitychange', () => {
+			if (document.hidden) {
+				pauseGame();
+			}
+			else {
+				resumeGame();
+			}
+		});
+		setInterval(() => {
+			if (!isPaused){
+				console.log("Not Paused");
+				createLetter();
+			}
+			else 
+				console.log("Paused");
+		}, createLetterInterval);
+		setInterval(() => {
+			if (!isPaused){
+				console.log("Not Paused");
+				updateGame();
+			}
+			else
+				console.log("Paused");
+		}, updateGameInterval);
+		if (!isPaused) {
+			setInterval(createLetter, 3000);
+			setInterval(updateGame, 10);
+		}
+	</script>
+</body>
+</html>
 

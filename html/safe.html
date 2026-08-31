@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Typing Torture</title>
+
+	<style>
+	:root {
+		--container_width: 898px;
+		--container_height: 748px;
+
+		--letter_width: 898px;
+		--letter_height: 380px;
+
+		--keyboard_width: 898px;
+		--keyboard_height: 368px;
+
+		--brand_color1: #8A0303;
+		--brand_color2: #C0C0C0;
+		--brand_color3: #FFFFFF;
+		--brand_color4: #000000;
+		--x_gap: 0px;
+		--y_gap: 1px;
+		--chosen_font_size: 1.6rem;
+	}
+	.container {
+		width: var(--container_width);
+		margin: 0 auto;
+		background-color: var(--brand_color1) !important; 
+		color: var(--brand_color2) !important;
+		padding: 0;
+		box-sizing: border-box;
+		font-size: 1.6rem;
+	}
+	.row-letters {
+		display: block;             
+		width: var(--letter_width) !important;    
+		height: var(--letter_height) !important;
+		min-height: var(--letter_height) !important;
+		text-align: center;         
+		margin-bottom: 0px;
+		position: relative;
+	}	
+	.row-keys {
+		display: block;             
+		width: var(--keyboard_width) !important;    
+		height: var(--keyboard_height) !important;
+		min-height: var(--keyboard_height) !important;
+		text-align: center;         
+		margin-bottom: 0px;
+		position: absolute;
+	}
+	.wrapper {
+		display: flex;
+		justify-content: center;
+		align-items: stretch;
+		width: 100%;
+		min-height: 100vh;
+	}
+	.left{
+		color: var(--brand-color2);
+		flex: 1;
+		max-width: 500px;
+		background-color:black;
+		color: white;
+		padding: 0px;
+		box-sizing: border-box;
+		
+	}
+	.hidden {
+
+		display: none;
+	}
+	.overlay-text {
+		position: absolute;
+		z-index: 10;
+		color: #000000;
+		font-weight: bold;
+		transform: translate(-50%, -50%);
+		
+	}
+	.falling-letter {
+		position: absolute;
+		top: -50px;
+		font-size: 48px;
+		font-weight: bold;
+		color: #ffffff;
+		text-shadow: 0 0 10px #00ffcc;
+		transform: translateX(-50%);
+	}
+
+	</style>
+	<script>
+		const rootStyles =
+			window.getComputedStyle
+				(document.documentElement);
+
+		const letter_height = parseFloat(rootStyles
+			.getPropertyValue('--letter_height').trim());
+
+		const x_gap = parseFloat(rootStyles
+			.getPropertyValue('--x_gap'));
+
+
+		const y_gap = parseFloat(rootStyles
+			.getPropertyValue('--y_gap'));
+ 
+
+		//Local (to the script?) values for positions in keyboard
+		//saved in elements of "keyboard"
+		let left = x_gap;
+		let bottom = y_gap;
+
+		const numbers = '1234567890_+';
+		const numbers_shift = "~!@#$%^&*()-=";		
+		const alpha = 'abcdefghijklmnopkqrstuvwxyz';
+		const alpha_shift = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		const symbols = `[]{}\|<>?/;:'"`;
+
+		//for random element selecion
+		const matrix = [
+			alpha, alpha_shift, 
+			numbers, numbers_shift, symbols];
+
+		// holds positions for the keyboard div
+		var keyboard_el = [
+			//numbers row shifted	
+			{ id: 'div_tilde', text: '~', 
+				x: (left + 30), y: (bottom + 78) },
+			{ id: 'div_bang', text: '!', 
+				x: (left + 94), y: (bottom + 78) },
+			{id: 'div_at', text: '@', 
+				x: (left + 142), y: (bottom + 76) },
+			{id: 'div_pound', text: '#', 
+				x: (left + 210), y: (bottom + 80) },
+			{id: 'div_dollar',text: '$', 
+				x: (left + 273), y: (bottom + 78) },
+			{id: 'div_percent',text: '%', 
+				x:(left + 330), y: (bottom +  78)},
+			{id: 'div_carat', text: '^', 
+				x:(left + 392),  y:(bottom + 82)},
+			{id: 'div_amp', text: '&', 
+				x:(left + 450),  y: (bottom + 78)},
+			{id: 'div_star',text: '*', 
+				x:(left + 518), y:(bottom + 84)},
+			{id: 'div_lparen',text: '(', 
+				x:(left + 582), y:(bottom + 78)},
+			{id: 'div_rparen', text: ')', 
+				x:(left + 644), y:(bottom + 78)},
+			{id: 'div_underscore', text: '_', 
+				x:(left + 698), y:(bottom + 76)},
+			{id: 'div_plus',text: '+', 
+				x:(left + 758), y:(bottom + 80)},
+			
+			//numbers row unshifted
+			{ id: "div_`", text: "`",
+				x:(left + 38), y: (bottom + 84)},
+			{ id: 'div_1', text: '1', 
+				x: (left + 94), y: (bottom + 76) },
+			{id: 'div_2', text: '2', 
+				x: (left + 151), y: (bottom + 76) },
+			{id: 'div_3', text: '3', 
+				x: (left + 212), y: (bottom + 76) },
+			{id: 'div_4',text: '4', 
+				x: (left + 273), y: (bottom + 78) },
+			{id: 'div_5',text: '5', 
+				x:(left + 333), y: (bottom +  78)},
+			{id: 'div_6', text: '6', 
+				x:(left + 392),  y:(bottom + 78)},
+			{id: 'div_7', text: '7', 
+				x:(left + 455),  y: (bottom + 78)},
+			{id: 'div_8',text: '8', 
+				x:(left + 518), y:(bottom + 78)},
+			{id: 'div_9',text: '9', 
+				x:(left + 580), y:(bottom + 78)},
+			{id: 'div_0', text: '0', 
+				x:(left + 640), y:(bottom + 78)},
+			{id: 'div_minus', text: '-', 
+				x:(left + 698), y:(bottom + 76)},
+			{id: 'div_equal',text: '=', 
+				x:(left + 758), y:(bottom + 80)},
+		
+			//alpha shifted	(top row of 3 alpha rows)
+			{ id: 'div_Q', text: 'Q', 
+				x: (left + 118), y: (bottom + 135) },
+			{id: 'div_W', text: 'W', 
+				x: (left + 175), y: (bottom + 135) },
+			{id: 'div_E', text: 'E', 
+				x: (left + 244), y: (bottom + 135) },
+			{id: 'div_R',text: 'R', 
+				x: (left + 302), y: (bottom + 135) },
+			{id: 'div_T',text: 'T', 
+				x:(left + 365), y: (bottom +  135)},
+			{id: 'div_Y', text: 'Y', 
+				x:(left + 424),  y:(bottom + 135)},
+			{id: 'div_U', text: 'U', 
+				x:(left + 486),  y: (bottom + 135)},
+			{id: 'div_I',text: 'I', 
+				x:(left + 548), y:(bottom + 135)},
+			{id: 'div_O',text: 'O', 
+				x:(left + 604), y:(bottom + 135)},
+			{id: 'div_P', text: 'P', 
+				x:(left + 666), y:(bottom + 134)},
+			{id: 'div_{',  text: '{', 
+				x:(left + 732), y:(bottom + 135)},
+			{id: 'div_}', text: '}', 
+				x:(left + 792), y: (bottom + 135)},
+			{id: 'div_back_sl',text: '|', 
+				x:(left + 851), y:(bottom + 135)},
+			
+			//alpha unshifted (top row of 3 alpha rows)
+			{ id: 'div_q', text: 'q', 
+				x: (left + 118), y: (bottom + 135) },
+			{id: 'div_w', text: 'w', 
+				x: (left + 182), y: (bottom + 135) },
+			{id: 'div_e', text: 'e', 
+				x: (left + 246), y: (bottom + 135) },
+			{id: 'div_r',text: 'r', 
+				x: (left + 308), y: (bottom + 135) },
+			{id: 'div_t',text: 't', 
+				x:(left + 364), y: (bottom +  135)},
+			{id: 'div_y', text: 'y', 
+				x:(left + 428),  y:(bottom + 135)},
+			{id: 'div_u', text: 'u', 
+				x:(left + 488),  y: (bottom + 135)},
+			{id: 'div_i',text: 'i', 
+				x:(left + 548), y:(bottom + 135)},
+			{id: 'div_o',text: 'o', 
+				x:(left + 608), y:(bottom + 135)},
+			{id: 'div_p', text: 'p', 
+				x:(left + 666), y:(bottom + 132)},
+			{id: 'div_[',  text: '[', 
+				x:(left + 738), y:(bottom + 135)},
+			{id: 'div_]', text: ']', 
+				x:(left + 792), y: (bottom + 135)},
+			{id: 'div_back_sl',text: '\\', 
+				x:(left + 851), y:(bottom + 135)},
+		
+			//alpha shifted (middle row of 3 alpha rows)
+			{ id: 'div_A', text: 'A', 
+				x: (left + 132), y: (bottom + 195) },
+			{id: 'div_S', text: 'S', 
+				x: (left + 196), y: (bottom + 195) },
+			{id: 'div_D', text: 'D', 
+				x: (left + 256), y: (bottom + 195) },
+			{id: 'div_F',text: 'F', 
+				x: (left + 314), y: (bottom + 195) },
+			{id: 'div_g',text: 'G', 
+				x:(left + 368), y: (bottom +  195)},
+			{id: 'div_H', text: 'H',
+				x:(left + 432),  y:(bottom + 195)},
+			{id: 'div_J', text: 'J',
+				x:(left + 504),  y: (bottom + 195)},
+			{id: 'div_K',text: 'K',
+				x:(left + 560), y:(bottom + 195)},
+			{id: 'div_L',text: 'L', 
+				x:(left + 624), y:(bottom + 195)},
+			{id: 'div_:', text: ':', 
+				x:(left + 682), y:(bottom + 195)},
+			{id: 'div_"', text:'"',
+				x:(left + 744), y:(bottom + 195)},
+		
+			//alpha shifted (middle row of 3 alpha rows)
+			{ id: 'div_a', text: 'a', 
+				x: (left + 132), y: (bottom + 195) },
+			{id: 'div_s', text: 's', 
+				x: (left + 196), y: (bottom + 195) },
+			{id: 'div_d', text: 'd', 
+				x: (left + 256), y: (bottom + 195) },
+			{id: 'div_f',text: 'f', 
+				x: (left + 318), y: (bottom + 195) },
+			{id: 'div_g',text: 'g', 
+				x:(left + 374), y: (bottom +  195)},
+			{id: 'div_h', text: 'h',
+				x:(left + 438),  y:(bottom + 195)},
+			{id: 'div_j', text: 'j',
+				x:(left + 504),  y: (bottom + 195)},
+			{id: 'div_k',text: 'k',
+				x:(left + 560), y:(bottom + 195)},
+			{id: 'div_l',text: 'l', 
+				x:(left + 624), y:(bottom + 195)},
+			{id: 'div_;', text: ';', 
+				x:(left + 682), y:(bottom + 195)},
+			{id: "div_'", text:"'",
+				x:(left + 744), y:(bottom + 195)},
+		 	
+			//alpha shifted(bottom row of 3 alpha rows)
+			{ id: 'div_Z', text: 'Z', 
+				x: (left + 166), y: (bottom + 255) },
+			{id: 'div_X', text: 'X', 
+				x: (left + 224), y: (bottom + 255) },
+			{id: 'div_C', text: 'C', 
+				x: (left + 286), y: (bottom + 255) },
+			{id: 'div_V',text: 'V', 
+				x: (left + 346), y: (bottom + 255) },
+			{id: 'div_B',text: 'B', 
+				x:(left + 410), y: (bottom +  255)},
+			{id: 'div_N', text: 'N',
+				x:(left + 468),  y:(bottom + 255)},
+			{id: 'div_M', text: 'M',
+				x:(left + 524),  y: (bottom + 255)},
+			{id: 'div_alligator_left',text: '<',
+				x:(left + 590), y:(bottom + 255)},
+			{id: 'div_alligator_right',text: '>', 
+				x:(left + 654), y:(bottom + 255)},
+			{id: 'div_question', text: '?', 
+				x:(left + 718), y:(bottom + 255)},
+		 		
+			//alpha unshifted(bottom row of 3 alpha rows)
+			{ id: 'div_z', text: 'z', 
+				x: (left + 168), y: (bottom + 255) },
+			{id: 'div_x', text: 'x', 
+				x: (left + 226), y: (bottom + 255) },
+			{id: 'div_c', text: 'c', 
+				x: (left + 288), y: (bottom + 255) },
+			{id: 'div_v',text: 'v', 
+				x: (left + 348), y: (bottom + 255) },
+			{id: 'div_b',text: 'b', 
+				x:(left + 410), y: (bottom +  255)},
+			{id: 'div_n', text: 'n',
+				x:(left + 470),  y:(bottom + 255)},
+			{id: 'div_m', text: 'm',
+				x:(left + 526),  y: (bottom + 255)},
+			{id: 'div_comma',text: ',',
+				x:(left + 590), y:(bottom + 255)},
+			{id: 'div_period',text: '.', 
+				x:(left + 654), y:(bottom + 255)},
+			{id: 'div_slash', text: '/', 	
+			x:(left + 718), y:(bottom + 255)}
+		];
+	</script>
+
+</head>
+<body>
+</body>
+<div class="wrapper">
+		<div class="left">
+			LEFT
+		</div>
+		<div class="container">
+			<div id="row-letters" class="row-letters">
+				<span class="score-item">You: <span id="score">0</span></span>
+				<span class="score-item">Toaster: <span id="misses">0</span></span>
+				<span class="score-item">Gremlin: <span id="output">0</span></span> 
+			</div>
+			<div id="row-keys" class="row-keys">
+				<img src="../img/keyboard.png" alt="keyboard asset">
+			</div>
+		</div>
+</div>
+<script>
+	const container = document.querySelector('.container');
+
+
+	//falling letters (and score output divs)
+	const letters = document.getElementById('row-letters');
+	var score = document.getElementById('score');
+	var misses = document.getElementById('misses');
+	var output = document.getElementById('output');
+	console.log("output: ", output);
+
+	//keyboard 
+	const keys = document.getElementById('row-keys');
+	const el = document.createElement('div');
+
+	let bottomY = 0;
+	var activeLetters = [];
+		
+	var letter;
+
+	let randomLetter = ' ';
+	let isPaused = false;
+	
+
+
+	const createLetterInterval = 30000;
+	const updateGameInterval = 30000;
+
+	function populate_keys() {
+		const keys = document.getElementById('row-keys');
+				//keyboard_el is defined in the top script
+				//inspect console says it's not defined
+		if (keys) {
+				keyboard_el.forEach(item => {
+				const new_div = document.createElement('div');	
+					new_div.id = item.id;
+					new_div.className = 'overlay-text';
+					new_div.textContent = item.text;
+					new_div.style.left = item.x + "px";
+					new_div.style.top = item.y + "px";
+					//hidden stops them from showing, 
+					//for now lets see how they look
+					//new_div.classList.add('hidden');
+					keys.appendChild(new_div);
+				}); //foreach keboard elemtent
+		}//if keys
+	} //end populate_keys
+	/* And run it once */
+	populate_keys(); 
+	/************************************************/
+
+
+
+	function create_letter() {
+		if (isPaused) return;
+		const matrix = [alpha, alpha_shift, numbers, numbers_shift, symbols];
+
+		/* randomize which array to choose */
+		const which = Math.floor(
+			Math.random() 
+			* matrix.length
+		);
+		const row = matrix[which];
+
+		/* randomize element from 
+		   that specific array */
+		const index = Math.floor(
+			Math.random() * row.length
+		);
+		element = row[index];
+		output.text = output;
+
+		/* assign the actual element just 
+		randomized to randomLetter */
+		randomLetter = element;
+		let char = randomLetter;
+
+
+
+		const el = document.createElement('div');
+		el.classList.add('falling-letter');
+		el.innerText = randomLetter;
+		const xPos = Math.random() * (window.innerWidth - 100) + 50;
+		el.style.left = `${xPos}px`;
+		const letterObj = {
+			element: el,
+			char: char,
+			y: -50,
+			speed: Math.random() * 2 + 1.5
+		};
+		container.appendChild(el);
+		activeLetters.push(letterObj);
+	} //end create_letter()
+
+	function update_game() {
+		if (isPaused) return;
+
+		if ( misses >= 10 ) {
+			resetGame();
+		}	
+		for (let i = activeLetters.length - 1; 
+			  i >= 0; i--) 
+		{
+			let l = activeLetters[i];
+			l.y += Math.floor(l.speed);
+
+			//A negative number coming in from l.y? 
+			//console.log("Bottom ", l.y);
+			l.element.style.top = `${l.y}px`;
+
+			/* Here is where the letter 
+			  passes the point of 
+		  	  catching it with a key press */
+
+			//The if statement is failing here.  
+			//The l.y is negative  Is this caused by the 
+			//class in the script that defines the transform?
+			console.log ("Bottom: ", bottomY);
+			if (l.y > bottom) {
+				let computedY = 0;
+				if (l.el) {
+					computedY = 
+					l.el.style.left;
+				} else {
+					computedY = 
+					        l.y || 'N/A';
+				} //end if
+				const realY  = 	Math.floor(computedY);
+				l.element.remove();
+				activeLetters.splice(i, 1);
+				misses += 1;
+			} //end if(l.y > bottomY)
+		}//end for i
+	}//end update_game
+
+	window.addEventListener('keydown', (e) => {
+	const keyPressed = e.key;
+
+		//Need to remove the element from the activeLetters divs
+	});
+	
+	
+
+	window.addEventListener('visibilitychange', () => {
+		if (document.hidden) {
+			pause_game();
+		}
+		else {
+			resume_game();
+		}
+	}); 
+
+
+	function pause_game(){
+		isPaused = true;
+	}
+	function resume_game() {
+		isPaused = false;
+	}
+	function reset_game() {
+		score = 0;
+		misses = 0;
+	}
+	setInterval(() => {
+		if (!isPaused){
+			create_letter();
+		}
+	}, create_letter);
+	setInterval(() => {
+		if (!isPaused){
+			update_game();
+		}
+	}, update_game);
+</script>
+
+
+
+</body>
+</html>
