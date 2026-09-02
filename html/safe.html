@@ -484,9 +484,40 @@
 		}//end for i
 	}//end update_game
 
-	window.addEventListener('keydown', (e) => {
-	const keyPressed = e.key;
-		//MAGIC
+
+
+	window.addEventListener('keydown', (event) => {
+		// 1.Exact letter pressedy(e.g., 'a', 'b', 'Shift')
+		// .toLowerCase() ensures 'A' and 'a' 
+		//both match correctly
+		//const pressedKey = event.key.toLowerCase();
+
+		// 2. Find the index of the first letter 
+		//object that matches the pressed key
+		// Replace 'activeLetters' with the actual 
+		//name of your array variable
+		const matchIndex = 
+		activeLetters.findIndex(letterObj =>
+		letterObj.char.toLowerCase() === pressedKey);
+
+		// 3. If a match is found 
+		//(findIndex returns -1 if it fails)
+		if (matchIndex !== -1) {
+			// Grab the matched letter object from your array
+        		const matchedLetter = activeLetters[matchIndex];
+			// Remove the visual HTML element from the screen
+			matchedLetter.element.remove();
+
+			// Remove the object from your 
+			//tracking array so it stops looping
+			activeLetters.splice(matchIndex, 1);
+			// Increase your score tracking variable
+			score += 10; 
+
+			// Update your score text on the screen
+			//(assuming you have a score element)
+			// console.log("Current Score:", score);
+		}
 	});
 	
 	
