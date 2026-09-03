@@ -43,7 +43,7 @@
 		height: var(--letter_height) !important;
 		min-height: var(--letter_height) !important;
 		background-color: var(--brand_color1);
-		color: var(--brand_color3);
+		color: var(--brand_color2);
 		text-align: center;         
 		margin-top: 0px;
 		margin-bottom: 0px;
@@ -86,7 +86,7 @@
 		top: 50px;
 		font-size: var(--chosen_font_size);
 		font-weight: bold;
-		color: var(--brand_color4);
+		color: var(--brand_color2);
 		z-index: 999;
 		display: inline-block;
 	}
@@ -96,10 +96,8 @@
 		const root_styles = getComputedStyle(document.documentElement);
 		const drift = 
 			parseInt(root_styles.getPropertyValue('--drift').trim());
-		//where to stop drifting and die
-		console.log("Die at: ", drift);
 		
-
+		console.log("Drift: ", drift);
 		const numbers = '1234567890_+';
 		const numbers_shift = "~!@#$%^&*()-=";		
 		const alpha = 'abcdefghijklmnopkqrstuvwxyz';
@@ -117,9 +115,6 @@
 		window.getComputedStyle(root).getPropertyValue('--drift');
 		console.log("drift: ", value);
 		
-
-
-
 		//changes here for levels
 		const matrix = [
 			alpha, alpha_shift, 
@@ -137,17 +132,17 @@
 			{ id: 'div_bang', text: '!', 
 				x: (left + 94), y: (last_good_y + 78) },
 			{id: 'div_at', text: '@', 
-				x: (left + 142), y: (last_good_y + 76) },
+				x: (left + 148), y: (last_good_y + 76) },
 			{id: 'div_pound', text: '#', 
 				x: (left + 210), y: (last_good_y + 80) },
 			{id: 'div_dollar',text: '$', 
 				x: (left + 273), y: (last_good_y + 78) },
 			{id: 'div_percent',text: '%', 
-				x:(left + 330), y: (last_good_y +  78)},
+				x:(left + 332), y: (last_good_y +  78)},
 			{id: 'div_carat', text: '^', 
 				x:(left + 392),  y:(last_good_y + 82)},
 			{id: 'div_amp', text: '&', 
-				x:(left + 450),  y: (last_good_y + 78)},
+				x:(left + 455),  y: (last_good_y + 78)},
 			{id: 'div_star',text: '*', 
 				x:(left + 518), y:(last_good_y + 84)},
 			{id: 'div_lparen',text: '(', 
@@ -356,13 +351,16 @@
 	var container = document.querySelector('container');
 	const letters = document.getElementById('row-letters');
 	
-	var score = document.getElementById('score');
+	var score = 0;
+	/*
 	var misses = document.getElementById('misses');
-	var gremlin = document.getElementById('gremlin');	
+	var gremlin = document.getElementById('gremlin');
+	*/
+	var gremlin = 0;
+	var misses = 0;	
 
 	//this is returning the div not the value
 	//so we need a global var for each one
-	var output = document.getElementById('gremlin').innerText;
 
 	//keyboard 
 	const keys = document.getElementById('row-keys');
@@ -396,10 +394,10 @@
 	populate_keys(); 
 	/************************************************/
 
-
-
 	function create_letter() {
 		if (isPaused) return;
+		
+		//LEVELS WILL WORK HARD RIGHT HERE
 		const matrix = 
 		[alpha, alpha_shift, numbers, 
 		numbers_shift, symbols];
@@ -427,8 +425,7 @@
 
 		let random_percent = Math.random() * 95;
 		el.style.left = `${random_percent}%`;
-		console.log(el.style.left);
-
+		
 		const letterObj = {
 			element: el,
 			char: char,
@@ -462,7 +459,7 @@
 		  	  catching it with a key press */
 			//get the height of the root style letter_height
 			let r_s = 
-			window.getComputedStyle(document.documentElement);				let y_divide=r_s.getPropertyValue('--letter_height');
+			window.getComputedStyle(document.documentElement);							let y_divide=r_s.getPropertyValue('--letter_height');
 
 			if (l.y > (y_divide + 40)) {
 				let computedY = 0;
@@ -487,10 +484,15 @@
 
 
 	window.addEventListener('keydown', (event) => {
+		//ignore modifier keys to keep gremlin hungry
+		const ignoredKeys  = [['Shift'], ['Control'] ['Alt'], ['CapsLock'], ['Meta']];
+		if (ignoredKeys.includes(event.key))
+			return;
+
 		// 1.Exact letter pressedy(e.g., 'a', 'b', 'Shift')
 		// .toLowerCase() ensures 'A' and 'a' 
 		//both match correctly
-		//const pressedKey = event.key.toLowerCase();
+		const pressedKey = event.key;
 
 		// 2. Find the index of the first letter 
 		//object that matches the pressed key
@@ -498,7 +500,7 @@
 		//name of your array variable
 		const matchIndex = 
 		activeLetters.findIndex(letterObj =>
-		letterObj.char.toLowerCase() === pressedKey);
+		letterObj.char === pressedKey);
 
 		// 3. If a match is found 
 		//(findIndex returns -1 if it fails)
@@ -512,11 +514,19 @@
 			//tracking array so it stops looping
 			activeLetters.splice(matchIndex, 1);
 			// Increase your score tracking variable
-			score += 10; 
-
+			score += 1; 
+			document.getElementById('score').textContent=score;
+			
 			// Update your score text on the screen
-			//(assuming you have a score element)
-			// console.log("Current Score:", score);
+			let scoreSpan = 
+				document.querySelector
+				("#score").textContent = score;
+		} else {
+			//Gremlin takes credit if your key is wrong
+				gremlin += 1;
+				document.querySelector
+				("#gremlin").textContent = gremlin;
+		
 		}
 	});
 	
@@ -539,13 +549,13 @@
 		isPaused = false;
 	}
 	function reset_game() {
-		//score = 0;
+		score = 0;
 		misses = 0;
 	}
 
 
-	const create_letter_interval = 1000;
-	const update_game_interval = 75;
+	const create_letter_interval = 3000;
+	const update_game_interval = 50;
 
 
 	setInterval(() => {
