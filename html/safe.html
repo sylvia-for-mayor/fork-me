@@ -367,7 +367,9 @@
 </body>
 		<div id="container" class="container">
 			<div id="row-letters" class="row-letters">
-				<sppan class="score-item">Score: 
+				<span class="score-item">Timer:
+				<span id ="timer_display"></span></span>
+				<span class="score-item">Score: 
 				<span id="score"></span></span>
 				<span id="score-pct"></span>
 				<span class="score-item">Toaster: 
@@ -413,7 +415,23 @@
 
 	let stacked_floor_height = 0;
 
+	let falling_interval_id = null;
+	let timer_interval_id = null;
 	
+	function start_countdown(seconds) {
+		let context_time = seconds;
+
+		timer_interval_id = setInterval(() => {
+		context_time --;
+		document.getElementById
+			("timer_display").innerHTML = context_time;
+			clearInterval(timer_interval_id);
+			clearInterval(falling_interval_id);
+			reset_game();
+		}, 1000);
+	}
+	
+
 	class arcade_soring_system {
 		constructor() {
 		this.win_threshold_pct = 75;
@@ -438,6 +456,13 @@
 				textContent = toaster_pct + "%";
 
 			//Milestone Check
+			if (user_pct >= 75){
+				reset_game("User");			
+			}else if (toaster_pct >= 75) {
+				reset_game("Toaster");
+			} else if (gremlin_pct >= 75){
+				reset_game("Gremlin");
+			}
 
 			if (total >= 10) {
 				if (user_pct >= this.win_threshold_pct)
@@ -711,19 +736,15 @@
 				letter_object.char === pressed_key);
 
 			if (match_index !== -1) {
-				// Correct match logic
 				const matched_letter =
 					active_letters[match_index];
 				matched_letter.element.remove();
 				active_letters.splice(match_index, 1);
-		
-				score += 1; 
-				//document.getElementById('score').
-				//textContent = score;
+				score += 1; //user score
 				scoring_engine.evaluate();
 				evaluate_arcade_match_rules();
 			} else {
-				// Standard Gremlin scoring
+				// gremlin score
 				gremlin += 1;
 				scoring_engine.evaluate();
 				evaluate_arcade_match_rules();
@@ -731,24 +752,28 @@
 	});
 
 	document.addEventListener("visibilitychange", () => {
-		// If the tab is hidden, flip 	is_paused to true. 
-		//If it's visible, flip it to false!
+		//use true/false provided with 
+		//documenet to toggle
 			is_paused = document.hidden;
-		console.log("Game pause state toggled to:", 	is_paused);
 	});
 
+	//Not even sure if these are used.....
 	function pause_game(){
 			is_paused = true;
 	}
 	function resume_game() {
 			is_paused = false;
 	}
-	function reset_game() {
-		total = 0;
-		score = 0;
-		toaster = 0;
-		gremlin = 0;
-		console.log("Resetting Game");
+
+	function reset_game(champion) {
+		total = 100;
+		score = 33;
+		toaster = 33;
+		gremlin = 33;
+		clearInterval(falling_interval_id);
+		clearInterval(timer_interval_id);
+		alert_system.flash(`🏆 MATCH OVER! Domination by: ${champion}`);
+		console.log(`Game over loop triggered. Winner: ${champion}`);
 	}
 
 
