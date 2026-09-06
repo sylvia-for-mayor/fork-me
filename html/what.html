@@ -2,266 +2,1665 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Torture Tutor</title>
+	<title>Typing Torture</title>
+
 	<style>
-		body {
-			margin: 0;
-			overflow: hidden;
-			background: #8A0303;
-			font-family: sans-serif;
-			color: #ffffff;
-			user-select: none;
-		}
-		#game-container{
-			position: relative; 
-			/* Keeps all moving items inside this box */
-			width: 100%;
-			max-right: calc(100% - 0px);
-			margin-left:  0px;
-			/* game area is exactly 600px tall */
-			height: 600px;
-			/* Prevents moving items spilling out */
-			overflow: hidden;
-			background: #00000;
-		}
-		#user-score {
-			display: block;
-			margin-top: 20px;
-			margin-left: 20px;
-			font-size: 24px;
-			z-index: 10;
-		}
-		img {
-			display: block;
-			margin-left: 20px;
-			margin-top: 15px;
-			width: 50%;
-			margin: 0 auto;
-		}
-		.falling-letter {
-			position: absolute;
-			top: -50px;
-			font-size: 48px;
-			font-weight: bold;
-			color: #ffffff;
-			text-shadow: 0 0 10px #00ffcc;
-			transform: translateX(-50%);
-		}
-		.hidden {
-			display: none;
-		}
+	:root {
+		--container_width: 889px;
+		--container_height: 668px;
+
+		--letter_width: 889px;
+		--letter_height: 428px;
+
+		--keyboard_width: 889px;
+		--keyboard_height: 240px;
+		--brand_color1: #8A0303;
+		--brand_color2: #C0C0C0;  //brand grey (silver)
+		--brand_color3: #FFFFFF;
+		--brand_color4: #000000;
+		--brand_color5: #777777; //purer grey for semi-opaque letters
+		--chosen_font_size: 3rem;
+		--drift_char: -48;
+		--floor: 380;
+		--shift_right: 5;
+		--fake: 1;  
+			
+	}
+	.container {
+		width: var(--container_width);
+		height: var(--container_height);
+		margin: 0 auto;
+		//background-color: var(--brand_color1) !important; 
+		color: var(--brand_color2) !important;
+		padding: 0;
+		box-sizing: border-box;
+		font-size: var(--chosen_font_size);
+		display: block;
+	}
+	.row-letters {
+		display: block;			 
+		width: 100%
+		width: var(--letter_width) !important;	
+		height: var(--letter_height) !important;
+		min-height: var(--letter_height) !important;
+		//background-color: var(--brand_color1);
+		color: var(--brand_color2);
+		text-align: center;		 
+		font=size: var(==chosen_font_size);
+		margin-top: 0px;
+		margin-bottom: 0px;
+		position: relative;
+		z-index: 100;
+		overflow: hidden;
+	}	
+	.row-keys {
+		display: block;			 
+		width: var(--keyboard_width) !important;	
+		height: var(--keyboard_height) !important;
+		min-height: var(--keyboard_height) !important;
+		//background-color: var(--brand_color2);
+		text-align: center;		 
+		margin-top: 0px;
+		position: relative;
+		font-size: var(--chosen_font_size);
+	}
+	.wrapper {
+		display: flex;
+		justify-content: center;
+		align-items: stretch;
+		width: 100%;
+		min-height: 100vh;
+	}
+	.hidden {
+
+		display: none;
+	}
+	.overlay-text {
+		position: absolute;
+		z-index: 10;
+		color: var(--brand_color1);
+		font-weight: bold;
+		//font-size: var(--chosen_font_size);
+		font-size: 3rem;
+		transform: translate(-50%, -50%);
+		
+	}
+	.falling-letter {
+		position: absolute;
+		top: 50px;
+		font-size: var(--chosen_font_size);
+		font-size: 3rem;
+		font-weight: bold;
+		color: black;
+		color: var(--brand_color2);
+		z-index: 999;
+		display: inline-block;
+	}
+
+
+
+
+/* 👇 COPY AND PASTE THIS DIRECTLY INTO YOUR CSS STYLESHEET 👇 */
+#div_tilde {
+  position: absolute;
+  left: 35px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_bang {
+  position: absolute;
+  left: 99px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_at {
+  position: absolute;
+  left: 153px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_pound {
+  position: absolute;
+  left: 217px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_dollar {
+  position: absolute;
+  left: 278px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_percent {
+  position: absolute;
+  left: 337px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_carat {
+  position: absolute;
+  left: 397px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_amp {
+  position: absolute;
+  left: 460px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_star {
+  position: absolute;
+  left: 519px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_lparen {
+  position: absolute;
+  left: 581px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_rparen {
+  position: absolute;
+  left: 647px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_underscore {
+  position: absolute;
+  left: 703px;
+  top: 25px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_plus {
+  position: absolute;
+  left: 763px;
+  top: 35px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_` {
+  position: absolute;
+  left: 25px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_1 {
+  position: absolute;
+  left: 99px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_2 {
+  position: absolute;
+  left: 156px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_3 {
+  position: absolute;
+  left: 217px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_4 {
+  position: absolute;
+  left: 278px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_5 {
+  position: absolute;
+  left: 338px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_6 {
+  position: absolute;
+  left: 397px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_7 {
+  position: absolute;
+  left: 460px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_8 {
+  position: absolute;
+  left: 523px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_9 {
+  position: absolute;
+  left: 585px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_0 {
+  position: absolute;
+  left: 645px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_minus {
+  position: absolute;
+  left: 703px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_equal {
+  position: absolute;
+  left: 763px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_Q {
+  position: absolute;
+  left: 123px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_W {
+  position: absolute;
+  left: 183px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_E {
+  position: absolute;
+  left: 249px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_R {
+  position: absolute;
+  left: 307px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_T {
+  position: absolute;
+  left: 370px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_Y {
+  position: absolute;
+  left: 429px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_U {
+  position: absolute;
+  left: 491px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_I {
+  position: absolute;
+  left: 553px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_O {
+  position: absolute;
+  left: 609px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_P {
+  position: absolute;
+  left: 671px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_{ {
+  position: absolute;
+  left: 737px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_} {
+  position: absolute;
+  left: 797px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_back_sl {
+  position: absolute;
+  left: 856px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_q {
+  position: absolute;
+  left: 123px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_w {
+  position: absolute;
+  left: 187px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_e {
+  position: absolute;
+  left: 251px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_r {
+  position: absolute;
+  left: 313px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_t {
+  position: absolute;
+  left: 369px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_y {
+  position: absolute;
+  left: 433px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_u {
+  position: absolute;
+  left: 493px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_i {
+  position: absolute;
+  left: 553px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_o {
+  position: absolute;
+  left: 613px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_p {
+  position: absolute;
+  left: 671px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_[ {
+  position: absolute;
+  left: 743px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_] {
+  position: absolute;
+  left: 797px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_back_sl {
+  position: absolute;
+  left: 856px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_A {
+  position: absolute;
+  left: 137px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_S {
+  position: absolute;
+  left: 201px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_D {
+  position: absolute;
+  left: 261px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_F {
+  position: absolute;
+  left: 319px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_G {
+  position: absolute;
+  left: 373px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_H {
+  position: absolute;
+  left: 437px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_J {
+  position: absolute;
+  left: 509px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_K {
+  position: absolute;
+  left: 565px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_L {
+  position: absolute;
+  left: 629px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_: {
+  position: absolute;
+  left: 687px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_" {
+  position: absolute;
+  left: 749px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_a {
+  position: absolute;
+  left: 137px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_s {
+  position: absolute;
+  left: 201px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_d {
+  position: absolute;
+  left: 261px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_f {
+  position: absolute;
+  left: 323px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_g {
+  position: absolute;
+  left: 379px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_h {
+  position: absolute;
+  left: 443px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_j {
+  position: absolute;
+  left: 509px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_k {
+  position: absolute;
+  left: 565px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_l {
+  position: absolute;
+  left: 629px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_; {
+  position: absolute;
+  left: 687px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_' {
+  position: absolute;
+  left: 749px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_Z {
+  position: absolute;
+  left: 171px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_X {
+  position: absolute;
+  left: 229px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_C {
+  position: absolute;
+  left: 291px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_V {
+  position: absolute;
+  left: 351px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_B {
+  position: absolute;
+  left: 415px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_N {
+  position: absolute;
+  left: 473px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_M {
+  position: absolute;
+  left: 529px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_alligator_left {
+  position: absolute;
+  left: 595px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_alligator_right {
+  position: absolute;
+  left: 659px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_question {
+  position: absolute;
+  left: 723px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_z {
+  position: absolute;
+  left: 173px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_x {
+  position: absolute;
+  left: 231px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_c {
+  position: absolute;
+  left: 293px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_v {
+  position: absolute;
+  left: 353px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_b {
+  position: absolute;
+  left: 415px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_n {
+  position: absolute;
+  left: 475px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_m {
+  position: absolute;
+  left: 531px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_comma {
+  position: absolute;
+  left: 595px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_period {
+  position: absolute;
+  left: 659px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_slash {
+  position: absolute;
+  left: 723px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+
+VM2023:37 
+
 	</style>
+	<script>
+		//pull magic numbers from css style
+		const root_styles = getComputedStyle(document.documentElement);
+
+		const drift_char = 
+			parseInt(root_styles.
+			getPropertyValue('--drift_char').trim());
+
+		const floor = 
+			parseInt(root_styles.
+			getPropertyValue('--floor').trim());
+
+
+		const letter_height =
+			parseInt(root_styles.
+			getPropertyValue('--letter_height').trim());
+
+		let shift_right =
+			parseInt(root_styles.
+			getPropertyValue('--shift_right').trim());
+
+		//returns hex string
+		var brand_color5 = 
+			root_styles.
+			getPropertyValue('--brand_color5');
+		
+		const numbers = '1234567890_+';
+		const numbers_shift = "~!@#$%^&*()-=";		
+		const alpha = 'abcdefghijklmnopkqrstuvwxyz';
+		const alpha_shift = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		const symbols = `[]{}\|<>?/;:'"`;
+
+		//Bridged over from css root element
+		const root = document.documentElement;
+
+		//changes here for levels
+		// coming soon
+		const matrix = [
+			alpha, 
+			//alpha_shift, 
+			//numbers, 
+			//numbers_shift, 
+			//symbols
+		];
+
+
+	const level_configurations = {
+		level_1_home:        ['a','s','d','f','g','h','j','k','l',';'],
+		level_2_above:       ['q','w','e','r','t','y','u','i','o','p'],
+		level_3_below:       ['z','x','c','v','b','n','m',',','.','/'],
+		level_4_all_lower:
+			['a','s','d','f','g','h','j','k',
+			'l',';','q','w','e','r','t','y',
+			'u','i','o','p','z','x','c','v','b','n','m'],
+		level_5_shifted:
+			['A','B','C','D','E','F','G',
+			'H','I','J','K','L','M','N','O',
+			'P','Q','R','S','T','U','V','W','X','Y','Z'],
+		level_6_numbers:
+			['0','1','2','3','4','5','6','7','8','9'],
+		level_7_symbols:
+			[';',':','[',']','{','}','<','>',
+			',','.','/','?','\\','|'] 
+			// Symbols render side-by-side or individually
+	};
+
+
+		let y_floor = 30;
+		//Ground zero for absolute x/y coords for the keyboard		
+		var keyboard_el = [
+			//numbers row shifted	
+			{ id: 'div_tilde', text: '~', 
+				x: (shift_right + 30), y: y_floor},
+			{ id: 'div_bang', text: '!', 
+				x: (shift_right + 94), y: y_floor},
+			{id: 'div_at', text: '@',
+				x: (shift_right + 148), y: y_floor},
+			{id: 'div_pound', text: '#', 
+				x: (shift_right + 212), y: y_floor},
+			{id: 'div_dollar',text: '$', 
+				x: (shift_right + 273), y: y_floor},
+			{id: 'div_percent',text: '%', 
+				x:(shift_right + 332), y: y_floor},
+			{id: 'div_carat', text: '^', 
+				x:(shift_right + 392),  y: y_floor},
+			{id: 'div_amp', text: '&', 
+				x:(shift_right + 455),  y: y_floor},
+			{id: 'div_star',text: '*', 
+				x:(shift_right + 514), y: y_floor},
+			{id: 'div_lparen',text: '(', 
+				x:(shift_right + 576), y: y_floor},
+			{id: 'div_rparen', text: ')', 
+				x:(shift_right + 642), y: y_floor},
+			{id: 'div_underscore', text: '_', 
+				x:(shift_right + 698), y: y_floor - 5},
+			{id: 'div_plus',text: '+', 
+				x:(shift_right + 758), y: y_floor + 5},
+			
+			//numbers row unshifted
+			{ id: "div_`", text: "`",
+				x:(shift_right + 20), y: y_floor},
+			{ id: 'div_1', text: '1', 
+				x: (shift_right + 94), y: y_floor },
+			{id: 'div_2', text: '2', 
+				x: (shift_right + 151), y: y_floor },
+			{id: 'div_3', text: '3', 
+				x: (shift_right + 212), y: y_floor },
+			{id: 'div_4',text: '4', 
+				x: (shift_right + 273), y: y_floor },
+			{id: 'div_5',text: '5', 
+				x:(shift_right + 333), y: y_floor },
+			{id: 'div_6', text: '6',
+				x:(shift_right + 392),  y: y_floor },
+			{id: 'div_7', text: '7', 
+				x:(shift_right + 455),  y: y_floor },
+			{id: 'div_8',text: '8', 
+				x:(shift_right + 518), y: y_floor},
+			{id: 'div_9',text: '9', 
+				x:(shift_right + 580), y: y_floor },
+			{id: 'div_0', text: '0', 
+				x:(shift_right + 640), y: y_floor },
+			{id: 'div_minus', text: '-', 
+				x:(shift_right + 698), y: y_floor },
+			{id: 'div_equal',text: '=', 
+				x:(shift_right + 758), y: y_floor },
+		
+			//alpha shifted	(top row of 3 alpha rows)
+			{ id: 'div_Q', text: 'Q', 
+				x: (shift_right + 118), y: (y_floor += 60) },
+			{id: 'div_W', text: 'W', 
+				x: (shift_right + 178), y: y_floor },
+			{id: 'div_E', text: 'E', 
+				x: (shift_right + 244), y: y_floor },
+			{id: 'div_R',text: 'R', 
+				x: (shift_right + 302), y: y_floor },
+			{id: 'div_T',text: 'T', 
+				x:(shift_right + 365), y: y_floor },
+			{id: 'div_Y', text: 'Y', 
+				x:(shift_right + 424),  y:y_floor },
+			{id: 'div_U', text: 'U', 
+				x:(shift_right + 486),  y: y_floor },
+			{id: 'div_I',text: 'I', 
+				x:(shift_right + 548), y: y_floor },
+			{id: 'div_O',text: 'O', 
+				x:(shift_right + 604), y: y_floor },
+			{id: 'div_P', text: 'P', 
+				x:(shift_right + 666), y: y_floor },
+			{id: 'div_{',  text: '{', 
+				x:(shift_right + 732), y: y_floor },
+			{id: 'div_}', text: '}', 
+				x:(shift_right + 792), y:  y_floor},
+			{id: 'div_back_sl',text: '|', 
+				x:(shift_right + 851), y: y_floor },
+			
+			//alpha unshifted (top row of 3 alpha rows)
+			{ id: 'div_q', text: 'q', 
+				x: (shift_right + 118), y: y_floor },
+			{id: 'div_w', text: 'w', 
+				x: (shift_right + 182), y: y_floor },
+			{id: 'div_e', text: 'e', 
+				x: (shift_right + 246), y: y_floor },
+			{id: 'div_r',text: 'r', 
+				x: (shift_right + 308), y: y_floor },
+			{id: 'div_t',text: 't', 
+				x:(shift_right + 364), y: y_floor },
+			{id: 'div_y', text: 'y', 
+				x:(shift_right + 428),  y: y_floor },
+			{id: 'div_u', text: 'u', 
+				x:(shift_right + 488),  y:  y_floor },
+			{id: 'div_i',text: 'i', 
+				x:(shift_right + 548), y: y_floor },
+			{id: 'div_o',text: 'o', 
+				x:(shift_right + 608), y: y_floor },
+			{id: 'div_p', text: 'p', 
+				x:(shift_right + 666), y:y_floor },
+			{id: 'div_[',  text: '[', 
+				x:(shift_right + 738), y: y_floor },
+			{id: 'div_]', text: ']', 
+				x:(shift_right + 792), y: y_floor  },
+			{id: 'div_back_sl',text: '\\', 
+				x:(shift_right + 851), y: y_floor },
+		
+			//alpha shifted (middle row of 3 alpha rows)
+			{ id: 'div_A', text: 'A', 
+				x: (shift_right + 132), y: (y_floor += 60) },
+			{id: 'div_S', text: 'S', 
+				x: (shift_right + 196), y: y_floor },
+			{id: 'div_D', text: 'D', 
+				x: (shift_right + 256), y: y_floor },
+			{id: 'div_F',text: 'F', 
+				x: (shift_right + 314), y: y_floor },
+			{id: 'div_G',text: 'G', 
+				x:(shift_right + 368), y: y_floor },
+			{id: 'div_H', text: 'H',
+				x:(shift_right + 432),  y: y_floor },
+			{id: 'div_J', text: 'J',
+				x:(shift_right + 504),  y: y_floor },
+			{id: 'div_K',text: 'K',
+				x:(shift_right + 560), y:y_floor },
+			{id: 'div_L',text: 'L', 
+				x:(shift_right + 624), y:y_floor },
+			{id: 'div_:', text: ':', 
+				x:(shift_right + 682), y:y_floor },
+			{id: 'div_"', text:'"',
+				x:(shift_right + 744), y:y_floor },
+		
+			//alpha shifted (middle row of 3 alpha rows)
+			{ id: 'div_a', text: 'a', 
+				x: (shift_right + 132), y: y_floor },
+			{id: 'div_s', text: 's', 
+				x: (shift_right + 196), y: y_floor },
+			{id: 'div_d', text: 'd', 
+				x: (shift_right + 256), y: y_floor },
+			{id: 'div_f',text: 'f', 
+				x: (shift_right + 318), y: y_floor },
+			{id: 'div_g',text: 'g', 
+				x:(shift_right + 374), y: y_floor },
+			{id: 'div_h', text: 'h',
+				x:(shift_right + 438),  y: y_floor },
+			{id: 'div_j', text: 'j',
+				x:(shift_right + 504),  y: y_floor },
+			{id: 'div_k',text: 'k',
+				x:(shift_right + 560), y: y_floor },
+			{id: 'div_l',text: 'l', 
+				x:(shift_right + 624), y: y_floor },
+			{id: 'div_;', text: ';', 
+				x:(shift_right + 682), y: y_floor },
+			{id: "div_'", text:"'",
+				x:(shift_right + 744), y: y_floor },
+		 	
+			//alpha shifted(y_floor row of 3 alpha rows)
+			{ id: 'div_Z', text: 'Z', 
+				x: (shift_right + 166), y: (y_floor += 60) },
+			{id: 'div_X', text: 'X', 
+				x: (shift_right + 224), y: y_floor },
+			{id: 'div_C', text: 'C', 
+				x: (shift_right + 286), y: y_floor },
+			{id: 'div_V',text: 'V', 
+				x: (shift_right + 346), y: y_floor },
+			{id: 'div_B',text: 'B', 
+				x:(shift_right + 410), y: y_floor },
+			{id: 'div_N', text: 'N',
+				x:(shift_right + 468),  y: y_floor },
+			{id: 'div_M', text: 'M',
+				x:(shift_right + 524),  y: y_floor },
+			{id: 'div_alligator_left',text: '<',
+				x:(shift_right + 590), y: y_floor },
+			{id: 'div_alligator_right',text: '>', 
+				x:(shift_right + 654), y: y_floor },
+			{id: 'div_question', text: '?', 
+				x:(shift_right + 718), y: y_floor },
+		 		
+			//alpha unshifted(y_floor row of 3 alpha rows)
+			{ id: 'div_z', text: 'z', 
+				x: (shift_right + 168), y: y_floor },
+			{id: 'div_x', text: 'x', 
+				x: (shift_right + 226), y: y_floor },
+			{id: 'div_c', text: 'c', 
+				x: (shift_right + 288), y: y_floor },
+			{id: 'div_v',text: 'v', 
+				x: (shift_right + 348), y: y_floor },
+			{id: 'div_b',text: 'b', 
+				x:(shift_right + 410), y: y_floor },
+			{id: 'div_n', text: 'n',
+				x:(shift_right + 470),  y: y_floor },
+			{id: 'div_m', text: 'm',
+				x:(shift_right + 526),  y: y_floor },
+			{id: 'div_comma',text: ',',
+				x:(shift_right + 590), y: y_floor },
+			{id: 'div_period',text: '.', 
+				x:(shift_right + 654), y: y_floor },
+			{id: 'div_slash', text: '/', 	
+				x:(shift_right + 718), y: y_floor }
+		];
+		window.keyboard_el = keyboard_el;
+	</script>
+
 </head>
 <body>
-	<!-- ************HTML SECTION************ -->
-	<div id="user-score">
-		You: <span id="score">0</span> 
-		</br>Toaster: <span id="misses">0</span>
-		<div id="gremlin">Gremlin: <span id="output">0</span></div>
-	<div id="game-container">
-	</div>
-	<div>
-		<img src="../img/keyboard.png" id="keyboard" alt="keyboard">
-		<div>
-		<span id="div_a" class="letter">A</span>
-		</div>
-	</div>
-	<button onclick="toggleDiv()"> DO IT </button
-	
-	<!-- SCRIPTING -->
-	<script>
-		const container = 
-			document.getElementById('game-container');
-		const scoreEl = 
-			document.getElementById('score');
-		const missesEl = 
-			document.getElementById('misses');
-		const outputEl = 
-			document.getElementById('output');
-		const keyboardEl = 
-			document.getElementById('keyboard');
-
-		let score = 0;
-		let misses = 0;
-		let bottomY = 0;
-		let activeLetters = [];
-
-		let randomLetter = ' ';
-		/* now for the keyboard magic */
-		const showChar = true;
-
-		let isPaused = false;
-		const createLetterInterval = 1000;
-		const updateGameInterval = 20;
-
-		function createLetter() {
-			if (isPaused) return;
-			else if (!isPaused){
-	
-					
-				/* fight the urge to play it on 
-				 forward because the browser is a
-				 rat bastard with a tiny penis */
-					/* WTH? */
-
-
-
-				/* logic to randomize letter choice
-				with upper lower numbers and symbols
-				into a single array for random choice */
-				const upperCase = 
-					'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-				const lowerCase = 
-				'abcdefghijklmnopkqrstuvwxyz';
-				const symbols = 
-					'!@#$%^&*()_+[]{}\/|-<>?;:~';  
-				const numbers = '1234567890';
-				const matrix = [
-					upperCase, lowerCase, 
-					symbols, numbers
-				];
-				/* randomize which array to choose */
-				const which = Math.floor(
-					Math.random() 
-					* matrix.length
-				);
-				const row = matrix[which];
-
-
-				/* randomize element from 
-				   that specific array */
-				const index = Math.floor(
-					Math.random() * row.length
-				);
-				const element = row[index];
-
-				/* assign the actual element just 
-				randomized to randomLetter */
-				randomLetter = element;
-				let char = randomLetter;
-				outputEl.innerText=randomLetter;
-			
-
-				const el = document.createElement('div');
-				el.classList.add('falling-letter');
-				el.innerText = randomLetter;
-            
-				const xPos = Math.random() 
-					* (window.innerWidth - 100) + 50;
-				el.style.left = `${xPos}px`;
-				const letterObj = {
-					element: el,
-					char: char,
-					y: -50,
-					speed: Math.random() * 2 + 1.5
-				};
-
-				container.appendChild(el);
-				activeLetters.push(letterObj);
-			} //end if !isPaused
-		} //end createLetter()
-
-		function updateGame() {
-			if (isPaused)
-				return;
-			else if (!isPaused) {
-				if ( misses >= 10 ) {
-					resetGame();
-				}	
-				/* get a better value than l.y 
-				  for the pain point */
-			
-				for (let i = activeLetters.length - 1; 
-				  i >= 0; i--) {
-					let l = activeLetters[i];
-					l.y += l.speed;
-					l.element.style.top = `${l.y}px`;
-
-					/* Here is where the letter 
-					  passes the point of 
-				  	  catching it with a key press */
-				
-					if (l.y > bottomY) {
-						let computedY = 0;
-						if (l.el) {
-							computedY = 
-							l.el.style.left;
-						} else {
-							computedY = 
-						        l.y || 'N/A';
-						}
-						const realY  = 
-						Math.floor(computedY);
-						//console.log("Y position: ", realY);
-						l.element.remove();
-						activeLetters.splice(i, 1);
-						misses++;
-						missesEl.innerText = misses;
-					} //end if(l.y > bottomY)
-				}//end for i
-			} //end if !isPaused
-		}//end updateGame
-
-		function pauseGame(){
-			isPaused = true;
-		}
-		function resumeGame() {
-			isPaused = false;
-		}
-		function resetGame() {
-			score = 0;
-			misses = 0;
-		}
-
-		window.addEventListener('keydown', (e) => {
-			const keyPressed = e.key;
-			const index = activeLetters.
-				findIndex(l => l.char === keyPressed);
-			if (index !== -1) {
-				activeLetters[index].element.remove();
-				activeLetters.splice(index, 1);
-				score++;
-				scoreEl.innerText = score;
-			} // end if (index !== -1)
-		}); //end eventListener keydown
-
-		window.addEventListener('load', () => {
-			const keyboard = document.getElementById('keyboard');
-			let rect;
-			if (keyboard) {
-				rect = keyboard.getBoundingClientRect();
-			}
-			bottomY = rect.top;
-		});
-		window.addEventListener('visibilitychange', () => {
-			if (document.hidden) {
-				pauseGame();
-			}
-			else {
-				resumeGame();
-			}
-		});
-		setInterval(() => {
-			if (!isPaused){
-				console.log("Not Paused");
-				createLetter();
-			}
-			else 
-				console.log("Paused");
-		}, createLetterInterval);
-		setInterval(() => {
-			if (!isPaused){
-				console.log("Not Paused");
-				updateGame();
-			}
-			else
-				console.log("Paused");
-		}, updateGameInterval);
-		if (!isPaused) {
-			setInterval(createLetter, 3000);
-			setInterval(updateGame, 10);
-		}
-	</script>
 </body>
-</html>
+		<div id="container" class="container">
+			<div id="row-letters" class="row-letters">
+				<span class="score-item">Timer:
+				<span id ="timer_display"></span></span>
+				<span class="score-item">Score: 
+				<span id="score"></span></span>
+				<span id="score-pct"></span>
+				<span class="score-item">Toaster: 
+				<span id="toaster"></span></span>
+				<span id="toaster-pct"></span>
+				<span class="score-item">Gremlin: 
+				<span id="gremlin"></span></span>
+				<span id="gremlin-pct"></span> 
+			</div>
 
+
+			<div id="row-keys" class="row-keys">
+				<img src="../img/keyboard2.png" 
+				alt="keyboard asset image">
+<!-- 👇 COPY AND PASTE THIS DIRECTLY INTO YOUR HTML CONTAINER 👇 -->
+<div id="div_tilde" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_bang" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_at" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_pound" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_dollar" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_percent" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_carat" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_amp" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_star" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_lparen" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_rparen" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_underscore" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_plus" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_`" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_1" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_2" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_3" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_4" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_5" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_6" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_7" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_8" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_9" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_0" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_minus" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_equal" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_Q" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_W" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_E" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_R" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_T" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_Y" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_U" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_I" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_O" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_P" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_{" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_}" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_back_sl" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_q" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_w" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_e" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_r" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_t" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_y" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_u" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_i" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_o" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_p" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_[" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_]" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_back_sl" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_A" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_S" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_D" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_F" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_G" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_H" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_J" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_K" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_L" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_:" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_"" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_a" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_s" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_d" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_f" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_g" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_h" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_j" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_k" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_l" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_;" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_'" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_Z" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_X" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_C" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_V" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_B" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_N" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_M" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_alligator_left" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_alligator_right" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_question" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_z" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_x" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_c" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_v" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_b" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_n" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_m" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_comma" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_period" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_slash" class="keyboard_key" style="visibility: hidden;"></div>
+			</div> 
+			
+		</div>
+</body>
+<script>
+	const page_load_time = Date.now();
+	var container = document.querySelector('container');
+	const letters = document.getElementById('row-letters');
+	update_active_keyboard_layout(level_configurations.level_1_home);
+
+	//score keeping variables
+	var score = 33;
+	var gremlin = 33;
+	var toaster = 33;	
+	var total_points = 99;
+
+	let game_timer_seconds = 60;
+	let timer_interval = null;
+	let win_threshold_pct = 75;
+	let min_actions_required = 20;
+
+	const keys = document.getElementById('row-keys');
+	const el = document.createElement('div');
+
+	var active_letters = [];
+	var row = []
+		
+	let random_letter = ' ';
+	let 	is_paused = false;
+
+	let stacked_floor_height = 0;
+
+	let falling_interval_id = null;
+	let timer_interval_id = null;
+	
+	function start_countdown(seconds) {
+		let context_time = seconds;
+		let timer_display = document.getElementById("timer_display");
+
+		if (!timer_display){
+console.warn("⚠️ Error: 'timer_display' element not found in DOM yet!");
+		        return;
+    		}
+		timer_display.innerHTML = context_time;
+
+		timer_interval_id = setInterval(() => {
+			context_time --;
+			let liveSpan = document.getElementById("timer_display");
+			if (liveSpan) {
+				document.getElementById
+					("timer_display")
+					.innerHTML = context_time;
+			}
+			if (context_time <= 0){
+				clearInterval(timer_interval_id);
+				clearInterval(falling_interval_id);
+				reset_game("Clock");
+			}
+		}, 1000);
+	}
+	
+
+	class arcade_soring_system {
+			constructor() {
+		this.win_threshold_pct = 75;
+		}
+	evaluate() {
+		try {
+			const total = score + gremlin + toaster;
+			if (total === 0) return;
+
+			// Clear output vars (values)
+			let user_pct	= Math.round((score / total) * 100);
+			let gremlin_pct = Math.round((gremlin / total) * 100);
+			let toaster_pct = Math.round((toaster / total) * 100);
+ 
+			// Update percentage spans 
+			if (document.getElementById('score-pct'))
+				document.getElementById('score-pct')
+				.textContent = user_pct + "%";
+			if (document.getElementById('gremlin-pct')) 						document.getElementById('gremlin-pct')
+				.textContent = gremlin_pct + "%";
+			if (document.getElementById('toaster-pct')) 						document.getElementById('toaster-pct').
+				textContent = toaster_pct + "%";
+
+			//Milestone Check
+			if (user_pct >= 75){
+				reset_game("User");			
+			}else if (toaster_pct >= 75) {
+				reset_game("Toaster");
+			} else if (gremlin_pct >= 75){
+				reset_game("Gremlin");
+			}
+
+			if (total >= 10) {
+				if (user_pct >= this.win_threshold_pct)
+					if (typeof end_game === 'function')
+						end_game("victory_knockout");
+				if (gremlin_pct >= this.win_threshold_pct)   
+					if (typeof end_game === 'function') 
+						end_game("gremlin_knockout");
+				if (toaster_pct >= this.win_threshold_pct)   
+				if (typeof end_game === 'function') 
+					end_game("toaster_knockout");
+			}
+
+		} catch (error) {
+			console.warn(
+			"Shut her down Clancey, she's pumping mud!!:", 
+			error.message);
+		}
+	} //evaluate
+
+	// Private helper mimicking clean encapsulation
+	_update_display(element_id, value) {
+		const el = document.getElementById(element_id);
+		if (el) {
+			// account for all possible field types
+			// div span node form input etc.
+			el.textContent = value;
+			el.innerHTML = value;
+
+			// If it's a form input node, 
+			// update its value track too
+			if ('value' in el) {
+				el.value = value;
+				}
+			}
+		}
+
+		_trigger_match_resolution(outcome) {
+			console.log
+			(`Match concluded via rules engine: ${outcome}`);
+			// Call your custom reset logic here
+			if (typeof yourResetFunction === 'function') {
+				reset_game("Rules");
+			}
+		}
+	}
+	// Instantiate the scoring system globally once
+	const scoring_engine = new arcade_soring_system();
+
+
+	function evaluate_arcade_match_rules(force_time_up = false) {
+		console.log
+		("evaluate_arcade_match_rules=>force_time_up getting press");
+		try {
+			const total = score + gremlin + toaster;
+	
+			// --- COUNTDOWN TIME-UP RESOLUTION (SUDDEN DEATH) ---
+			if (force_time_up) {
+				clearInterval(timer_interval);
+			
+				// Look for the highest score among the three
+				let max_score = Math.max
+					(score, gremlin, toaster);
+			
+				if (score === max_score) {
+					alert("TIME UP! Victory on raw points!");
+					if (typeof end_game === 'function') 
+					end_game("victory_points");
+
+				} else if (gremlin === max_score) {
+				alert("TIME UP! Gremlin wins on points!");
+				if (typeof end_game === 'function') 
+					end_game("gremlin_loss");
+				} else {
+					alert
+					("TIME UP! Toaster wins on points!");
+					if (typeof end_game === 'function') 
+					end_game("toaster_loss");
+				}
+				return;
+			} //end if time up
+		
+  			// --- CONTINUOUS PERCENTAGE KNOCKOUT RULES ---
+  			if (total < min_actions_required) return;
+	
+			let user_pct = Math.round((score / total) * 100);
+			let gremlin_pct = Math.round((gremlin / total) * 100);
+			let toaster_pct = Math.round((toaster / total) * 100);
+
+			// Immediate Knockout criteria if someone 
+			// captures threshold percent of the game space
+			if (user_pct >= win_threshold_pct) {
+				if (typeof end_game === 'function')
+					end_game("victory_knockout");
+			} else 
+			if (gremlin_pct >= win_threshold_pct) {
+				if (typeof end_game === 'function') 
+					end_game("gremlin_knockout");
+			} else if (toaster_pct >= win_threshold_pct) {
+				if (typeof end_game === 'function')
+					end_game("toaster_knockout");
+			}
+		} catch (e) {
+			// Prevents silent thread death completely
+			console.warn
+			("Shut her down Clancey, she's pumping mud: ", e);
+		}
+	}
+		
+	
+
+	function populate_keys() {
+		//THIS method needs to be updated to use a different 
+		//array than the keys, for check showing only in play for
+		//level
+		/*
+			const keys = document.getElementById('row-keys');
+			if (keys) {
+					keyboard_el.forEach(item => {
+						const new_div = document.
+						createElement('div');	
+						new_div.id = item.id;
+						new_div.className =
+							'overlay-text';
+						new_div.textContent =
+							item.text;
+						new_div.style.left =
+							item.x + "px";
+						new_div.style.top =
+							item.y + "px";
+						new_div.classList.add('hidden');
+						keys.appendChild(new_div);
+					}); //foreach keboard elemtent
+			}//if keys
+		*/
+			/*************************************************/
+	} // end populate_keys
+	// And run it once 
+
+	//Run once functions
+	start_countdown(2400);
+	populate_keys(); 
+
+	function create_letter() {
+		if (is_paused) return;
+
+		//randomize which array to choose
+		//(declared and populated in <head>)
+		const which = Math.floor(
+			Math.random() 
+			* matrix.length
+		);
+		row = matrix[which];
+
+		const index = Math.floor(Math.random() * row.length);
+		elmts = row[index];
+
+		// assign the actual element just 
+		// randomized to random_letter 
+		random_letter = elmts;
+		let char = random_letter;
+
+		var el = document.createElement('div');
+		el.classList.add('falling-letter');
+		el.innerText = random_letter;
+
+		//left edge position for new falling letter
+		let random_percent = Math.random() * 95;
+		el.style.left = `${random_percent}%`;
+		
+		const letter_object = {
+			element: el,
+			char: char,
+			y: -50,
+			speed: Math.random() * 2 + 1.5
+		};
+		//push the new letter out to the "row-letters" div
+		document.getElementById('row-letters').appendChild(el);
+		active_letters.push(letter_object);
+	} //end create_letter()
+
+	function update_game() {
+		if (is_paused) return;
+		if ( toaster >= 300 ) {
+			reset_game();
+		}
+
+		// Y-Movement 
+		for (let i = active_letters.length - 1; i >= 0; i--) {
+			let l = active_letters[i];
+    	
+			// Core falling math and transform application
+			let active_speed = Number(l.speed) || 2; 
+			l.y = (Number(l.y) || 0) + Math.floor(active_speed);
+    	
+			if (l.element && l.element.style) {
+				l.element.style.transform = 
+				`translateX(-50%) translateY(${l.y}px)`;
+			}
+
+			//Starts at 4 and increases until the
+			//floor is only 200 (need a var for tolerance)
+			//HERE MAGIC NUMBER
+			let dynamic_floor = letter_height - 
+				(stacked_floor_height * 4);
+			if (dynamic_floor < 200) { 
+				dynamic_floor = 200; 
+			}
+    
+			// The stacking boundary condition check
+			if (l.y > dynamic_floor) {
+				// Visual Freeze: Change color and leave the 
+				//frozen element on the screen
+				if (l.element) {
+					l.element.style.opacity = "0.5";
+					l.element.style.color = brand_color5;
+				}
+
+				//Add character to deck array and
+				//splice it from active_letters
+				if (Array.isArray(elmts)) { 
+					elmts.push(l.char); 
+				}
+        
+				// Wipe out of falling active 
+				//calculations array loop memory
+				active_letters.splice(i, 1);
+        
+				//tick goes to global the rising floor
+				stacked_floor_height += 1;
+        	
+				// Score 1 for the mighty toaster
+				toaster += 1;
+    
+				// Evaluate live competitive score thresholds
+				if (typeof scoring_engine !== 'undefined' && 
+				typeof scoring_engine.evaluate === 
+				'function')
+				{
+					scoring_engine.evaluate();
+					evaluate_arcade_match_rules();
+				}
+			}//end if l.y > dynamic floor
+		}//for
+	}//end update_game() -- runs via interval
+
+	window.addEventListener('keydown', (event) => {
+		// 1. Core Safety Gates
+		if (Date.now() - page_load_time < 2000) return; 
+			if (event.repeat) return; 
+			//anti-theft because the gremlin is evil
+			//and steals the shift 15 times before the
+			//user can press a key
+			if (event.ctrlKey || event.altKey || event.metaKey) 
+				return; 
+			if (event.key.length !== 1) return; 
+
+			// !!! FIX FOR THE SPACEBAR TRAP !!!
+			// If Spacebar isn't part of your active 
+			// matrix level, ignore it completely
+			// Can the space be added now?
+			// If I wait until I get to 'words'
+			// level and have more a complicated implementation
+			if (event.key === " ") {
+				return; 
+			}
+
+			const pressed_key = event.key;
+		
+			// 2. Find the match
+			const match_index = 
+				active_letters.
+				findIndex(letter_object => 
+				letter_object.char === pressed_key);
+
+			if (match_index !== -1) {
+				const matched_letter =
+					active_letters[match_index];
+				matched_letter.element.remove();
+				active_letters.splice(match_index, 1);
+				score += 1; //user score
+				scoring_engine.evaluate();
+				evaluate_arcade_match_rules();
+			} else {
+				// gremlin score
+				gremlin += 1;
+				scoring_engine.evaluate();
+				evaluate_arcade_match_rules();
+			}
+	});
+
+	document.addEventListener("visibilitychange", () => {
+		//use true/false provided with 
+		//documenet to toggle
+			is_paused = document.hidden;
+	});
+
+	//Not even sure if these are used.....
+	function pause_game(){
+			is_paused = true;
+	}
+	function resume_game() {
+			is_paused = false;
+	}
+
+	function reset_game(champion) {
+		total = 100;
+		score = 33;
+		toaster = 33;
+		gremlin = 33;
+		clearInterval(falling_interval_id);
+		clearInterval(timer_interval_id);
+		console.log(`🏆 MATCH OVER! Domination by: ${champion}`);
+		console.log(`Game over loop triggered. Winner: ${champion}`);
+	}
+
+
+	var create_letter_interval = 2000;
+	var update_game_interval = 100;
+
+	setInterval(() => {
+		if (!	is_paused){
+			create_letter();
+		}
+	}, create_letter_interval);
+	
+	setInterval(() => {
+		if (!	is_paused){
+			update_game();
+		}
+	}, update_game_interval);
+
+
+
+
+
+
+function update_active_keyboard_layout(allowedCharacters) {
+    for (let asciiCode = 32; asciiCode <= 126; asciiCode++) {
+        let char = String.fromCharCode(asciiCode);
+        let elementId = convertCharacterToDivId(char);
+        let keyElement = document.getElementById(elementId);
+        
+        if (!keyElement) continue;
+
+        // Reset text content cleanly
+        keyElement.innerHTML = "";
+        
+        if (allowedCharacters.includes(char)) {
+            // UNHIDE FIREWALL: Use standard visibility rules instead of display blocks
+            keyElement.style.visibility = "visible"; 
+            keyElement.style.opacity = "1";
+            
+            // Inject the clean single string character character
+            keyElement.innerHTML = char;
+            keyElement.classList.add("keyboard-key-active");
+            
+            // Font balancing corrections
+            if (char === "@") {
+                keyElement.style.fontSize = "12px";
+            } else if (char === "`") {
+                keyElement.style.fontSize = "22px";
+                keyElement.style.transform = "translateY(2px)";
+            } else {
+                keyElement.style.fontSize = "3rem";
+                keyElement.style.transform = "none";
+            }
+        } else {
+            // HIDE FIREWALL: Make the key character vanish without breaking coordinate space
+            keyElement.style.visibility = "hidden";
+            keyElement.style.opacity = "0";
+            keyElement.classList.remove("keyboard-key-active");
+        }
+    }
+}
+
+
+
+
+
+
+
+
+function convertCharacterToDivId(char) {
+    const structuralNamingOverrides = {
+        ' ': 'div_space', '!': 'div_exclamation', '}': 'div_close_brace',
+        '+': 'div_plus', '=': 'div_equals', '-': 'div_dash', '_': 'div_underscore',
+        '.': 'div_period', ',': 'div_comma', '/': 'div_slash', '?': 'div_question',
+        ';': 'div_semicolon', ':': 'div_colon', '`': 'div_backtick', '~': 'div_tilde',
+        '#': 'div_hash', '$': 'div_dollar', '%': 'div_percent', '^': 'div_caret',
+        '&': 'div_ampersand', '*': 'div_asterisk', '(': 'div_open_paren', ')': 'div_close_paren',
+        '[': 'div_open_bracket', ']': 'div_close_bracket', '{': 'div_open_brace',
+        '\\': 'div_backslash', '|': 'div_pipe', '"': 'div_quote', "'": 'div_apostrophe',
+        '<': 'div_less_than', '>': 'div_greater_than'
+    };
+
+    if (structuralNamingOverrides[char]) {
+        return structuralNamingOverrides[char];
+    }
+    
+    // Capitalization Rule: Matches your HTML pattern where 'G' becomes 'div_g_upper'
+    if (char >= 'A' && char <= 'Z') {
+        return `div_${char.toLowerCase()}_upper`;
+    }
+    
+    // Default fallback for numbers and standard lowercase letters (e.g., div_a, div_7)
+    return `div_${char}`;
+}
+
+
+
+
+</script>
+</html>
