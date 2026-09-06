@@ -420,14 +420,27 @@
 	
 	function start_countdown(seconds) {
 		let context_time = seconds;
+		let timer_display = document.getElementById("timer_display");
+
+		if (!timer_display){
+console.warn("⚠️ Error: 'timer_display' element not found in DOM yet!");
+		        return;
+    		}
+		timer_display.innerHTML = context_time;
 
 		timer_interval_id = setInterval(() => {
-		context_time --;
-		document.getElementById
-			("timer_display").innerHTML = context_time;
-			clearInterval(timer_interval_id);
-			clearInterval(falling_interval_id);
-			reset_game();
+			context_time --;
+			let liveSpan = document.getElementById("timer_display");
+			if (liveSpan) {
+				document.getElementById
+					("timer_display")
+					.innerHTML = context_time;
+			}
+			if (context_time <= 0){
+				clearInterval(timer_interval_id);
+				clearInterval(falling_interval_id);
+				reset_game("Clock");
+			}
 		}, 1000);
 	}
 	
