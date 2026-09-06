@@ -446,9 +446,9 @@ console.warn("⚠️ Error: 'timer_display' element not found in DOM yet!");
 	
 
 	class arcade_soring_system {
-		constructor() {
+			constructor() {
 		this.win_threshold_pct = 75;
-	}
+		}
 	evaluate() {
 		try {
 			const total = score + gremlin + toaster;
@@ -518,7 +518,7 @@ console.warn("⚠️ Error: 'timer_display' element not found in DOM yet!");
 			(`Match concluded via rules engine: ${outcome}`);
 			// Call your custom reset logic here
 			if (typeof yourResetFunction === 'function') {
-				reset_game();
+				reset_game("Rules");
 			}
 		}
 	}
@@ -614,6 +614,9 @@ console.warn("⚠️ Error: 'timer_display' element not found in DOM yet!");
 			/*************************************************/
 	} // end populate_keys
 	// And run it once 
+
+	//Run once functions
+	start_countdown(90)
 	populate_keys(); 
 
 	function create_letter() {
@@ -785,7 +788,7 @@ console.warn("⚠️ Error: 'timer_display' element not found in DOM yet!");
 		gremlin = 33;
 		clearInterval(falling_interval_id);
 		clearInterval(timer_interval_id);
-		alert_system.flash(`🏆 MATCH OVER! Domination by: ${champion}`);
+		console.log(`🏆 MATCH OVER! Domination by: ${champion}`);
 		console.log(`Game over loop triggered. Winner: ${champion}`);
 	}
 
