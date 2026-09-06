@@ -15,10 +15,10 @@
 		--keyboard_width: 889px;
 		--keyboard_height: 240px;
 		--brand_color1: #8A0303;
-		--brand_color2: #C0C0C0;  //brand grey (silver)
+		--brand_color2: #C0C0C0;  /* brand grey (silver) */
 		--brand_color3: #FFFFFF;
 		--brand_color4: #000000;
-		--brand_color5: #777777; //purer grey for semi-opaque letters
+		--brand_color5: #777777; /* purer grey for semi-opaque letters */
 		--chosen_font_size: 3rem;
 		--drift_char: -48;
 		--floor: 380;
@@ -30,7 +30,7 @@
 		width: var(--container_width);
 		height: var(--container_height);
 		margin: 0 auto;
-		background-color: var(--brand_color1) !important; 
+		//background-color: var(--brand_color1) !important; 
 		color: var(--brand_color2) !important;
 		padding: 0;
 		box-sizing: border-box;
@@ -43,10 +43,10 @@
 		width: var(--letter_width) !important;	
 		height: var(--letter_height) !important;
 		min-height: var(--letter_height) !important;
-		background-color: var(--brand_color1);
+		//background-color: var(--brand_color1);
 		color: var(--brand_color2);
 		text-align: center;		 
-		font=size: var(==chosen_font_size);
+		font-size: var(--chosen_font_size);
 		margin-top: 0px;
 		margin-bottom: 0px;
 		position: relative;
@@ -58,7 +58,12 @@
 		width: var(--keyboard_width) !important;	
 		height: var(--keyboard_height) !important;
 		min-height: var(--keyboard_height) !important;
-		background-color: var(--brand_color2);
+
+		//background-color: var(--brand_color2);
+		bottom: 0px;
+		left: 0px;
+		text-align: left;
+
 		text-align: center;		 
 		margin-top: 0px;
 		position: relative;
@@ -88,7 +93,7 @@
 	.falling-letter {
 		position: absolute;
 		top: 50px;
-		//font-size: var(--chosen_font_size);
+		font-size: var(--chosen_font_size);
 		font-size: 3rem;
 		font-weight: bold;
 		color: black;
@@ -96,6 +101,669 @@
 		z-index: 999;
 		display: inline-block;
 	}
+
+
+
+
+/* 👇 COPY AND PASTE THIS DIRECTLY INTO YOUR CSS STYLESHEET 👇 */
+#div_tilde {
+  position: absolute;
+  left: 35px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_bang {
+  position: absolute;
+  left: 99px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_at {
+  position: absolute;
+  left: 153px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_pound {
+  position: absolute;
+  left: 217px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_dollar {
+  position: absolute;
+  left: 278px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_percent {
+  position: absolute;
+  left: 337px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_carat {
+  position: absolute;
+  left: 397px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_amp {
+  position: absolute;
+  left: 460px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_star {
+  position: absolute;
+  left: 519px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_lparen {
+  position: absolute;
+  left: 581px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_rparen {
+  position: absolute;
+  left: 647px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_underscore {
+  position: absolute;
+  left: 703px;
+  top: 25px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_plus {
+  position: absolute;
+  left: 763px;
+  top: 35px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_` {
+  position: absolute;
+  left: 25px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_1 {
+  position: absolute;
+  left: 99px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_2 {
+  position: absolute;
+  left: 156px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_3 {
+  position: absolute;
+  left: 217px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_4 {
+  position: absolute;
+  left: 278px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_5 {
+  position: absolute;
+  left: 338px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_6 {
+  position: absolute;
+  left: 397px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_7 {
+  position: absolute;
+  left: 460px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_8 {
+  position: absolute;
+  left: 523px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_9 {
+  position: absolute;
+  left: 585px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_0 {
+  position: absolute;
+  left: 645px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_minus {
+  position: absolute;
+  left: 703px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_equal {
+  position: absolute;
+  left: 763px;
+  top: 30px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_Q {
+  position: absolute;
+  left: 123px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_W {
+  position: absolute;
+  left: 183px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_E {
+  position: absolute;
+  left: 249px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_R {
+  position: absolute;
+  left: 307px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_T {
+  position: absolute;
+  left: 370px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_Y {
+  position: absolute;
+  left: 429px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_U {
+  position: absolute;
+  left: 491px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_I {
+  position: absolute;
+  left: 553px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_O {
+  position: absolute;
+  left: 609px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_P {
+  position: absolute;
+  left: 671px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_{ {
+  position: absolute;
+  left: 737px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_} {
+  position: absolute;
+  left: 797px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_back_sl {
+  position: absolute;
+  left: 856px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_q {
+  position: absolute;
+  left: 123px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_w {
+  position: absolute;
+  left: 187px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_e {
+  position: absolute;
+  left: 251px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_r {
+  position: absolute;
+  left: 313px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_t {
+  position: absolute;
+  left: 369px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_y {
+  position: absolute;
+  left: 433px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_u {
+  position: absolute;
+  left: 493px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_i {
+  position: absolute;
+  left: 553px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_o {
+  position: absolute;
+  left: 613px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_p {
+  position: absolute;
+  left: 671px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_[ {
+  position: absolute;
+  left: 743px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_] {
+  position: absolute;
+  left: 797px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_back_sl {
+  position: absolute;
+  left: 856px;
+  top: 90px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_A {
+  position: absolute;
+  left: 137px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_S {
+  position: absolute;
+  left: 201px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_D {
+  position: absolute;
+  left: 261px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_F {
+  position: absolute;
+  left: 319px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_G {
+  position: absolute;
+  left: 373px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_H {
+  position: absolute;
+  left: 437px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_J {
+  position: absolute;
+  left: 509px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_K {
+  position: absolute;
+  left: 565px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_L {
+  position: absolute;
+  left: 629px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_: {
+  position: absolute;
+  left: 687px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_" {
+  position: absolute;
+  left: 749px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_a {
+  position: absolute;
+  left: 137px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_s {
+  position: absolute;
+  left: 201px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_d {
+  position: absolute;
+  left: 261px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_f {
+  position: absolute;
+  left: 323px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_g {
+  position: absolute;
+  left: 379px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_h {
+  position: absolute;
+  left: 443px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_j {
+  position: absolute;
+  left: 509px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_k {
+  position: absolute;
+  left: 565px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_l {
+  position: absolute;
+  left: 629px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_; {
+  position: absolute;
+  left: 687px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_' {
+  position: absolute;
+  left: 749px;
+  top: 150px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_Z {
+  position: absolute;
+  left: 171px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_X {
+  position: absolute;
+  left: 229px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_C {
+  position: absolute;
+  left: 291px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_V {
+  position: absolute;
+  left: 351px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_B {
+  position: absolute;
+  left: 415px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_N {
+  position: absolute;
+  left: 473px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_M {
+  position: absolute;
+  left: 529px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_alligator_left {
+  position: absolute;
+  left: 595px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_alligator_right {
+  position: absolute;
+  left: 659px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_question {
+  position: absolute;
+  left: 723px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_z {
+  position: absolute;
+  left: 173px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_x {
+  position: absolute;
+  left: 231px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_c {
+  position: absolute;
+  left: 293px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_v {
+  position: absolute;
+  left: 353px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_b {
+  position: absolute;
+  left: 415px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_n {
+  position: absolute;
+  left: 475px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_m {
+  position: absolute;
+  left: 531px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_comma {
+  position: absolute;
+  left: 595px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_period {
+  position: absolute;
+  left: 659px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
+#div_slash {
+  position: absolute;
+  left: 723px;
+  top: 210px;
+  width: 45px;
+  font-size: var(--chosen_font_size) !important;
+}
 
 	</style>
 	<script>
@@ -123,16 +791,6 @@
 		var brand_color5 = 
 			root_styles.
 			getPropertyValue('--brand_color5');
-
-
-		/*********************************************************/
-		//console.log("Drift Floor: ", floor);
-		//console.log("Drift Char: ", drift_char);
-		//console.log("Letter Height: ", letter_height);
-		//console.log("New magic number dissappears: ", y_floor);
-		  console.log("New color magic fixed: ", brand_color5);
-		/*********************************************************/
-		
 		
 		const numbers = '1234567890_+';
 		const numbers_shift = "~!@#$%^&*()-=";		
@@ -152,6 +810,28 @@
 			//numbers_shift, 
 			//symbols
 		];
+
+
+	const level_configurations = {
+		level_1_home:        ['a','s','d','f','g','h','j','k','l',';'],
+		level_2_above:       ['q','w','e','r','t','y','u','i','o','p'],
+		level_3_below:       ['z','x','c','v','b','n','m',',','.','/'],
+		level_4_all_lower:
+			['a','s','d','f','g','h','j','k',
+			'l',';','q','w','e','r','t','y',
+			'u','i','o','p','z','x','c','v','b','n','m'],
+		level_5_shifted:
+			['A','B','C','D','E','F','G',
+			'H','I','J','K','L','M','N','O',
+			'P','Q','R','S','T','U','V','W','X','Y','Z'],
+		level_6_numbers:
+			['0','1','2','3','4','5','6','7','8','9'],
+		level_7_symbols:
+			[';',':','[',']','{','}','<','>',
+			',','.','/','?','\\','|'] 
+			// Symbols render side-by-side or individually
+	};
+
 
 		let y_floor = 30;
 		//Ground zero for absolute x/y coords for the keyboard		
@@ -277,7 +957,7 @@
 				x: (shift_right + 256), y: y_floor },
 			{id: 'div_F',text: 'F', 
 				x: (shift_right + 314), y: y_floor },
-			{id: 'div_g',text: 'G', 
+			{id: 'div_G',text: 'G', 
 				x:(shift_right + 368), y: y_floor },
 			{id: 'div_H', text: 'H',
 				x:(shift_right + 432),  y: y_floor },
@@ -360,6 +1040,7 @@
 			{id: 'div_slash', text: '/', 	
 				x:(shift_right + 718), y: y_floor }
 		];
+		window.keyboard_el = keyboard_el;
 	</script>
 
 </head>
@@ -382,7 +1063,103 @@
 
 
 			<div id="row-keys" class="row-keys">
-				<img src="../img/keyboard2.png" alt="keyboard asset image">
+				<img src="../img/keyboard2.png" 
+				alt="keyboard asset image">
+<!-- 👇 COPY AND PASTE THIS DIRECTLY INTO YOUR HTML CONTAINER 👇 -->
+<div id="div_tilde" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_bang" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_at" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_pound" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_dollar" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_percent" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_carat" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_amp" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_star" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_lparen" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_rparen" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_underscore" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_plus" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_`" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_1" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_2" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_3" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_4" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_5" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_6" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_7" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_8" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_9" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_0" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_minus" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_equal" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_Q" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_W" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_E" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_R" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_T" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_Y" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_U" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_I" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_O" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_P" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_{" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_}" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_back_sl" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_q" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_w" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_e" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_r" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_t" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_y" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_u" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_i" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_o" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_p" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_[" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_]" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_back_sl" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_A" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_S" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_D" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_F" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_G" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_H" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_J" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_K" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_L" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_:" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_"" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_a" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_s" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_d" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_f" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_g" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_h" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_j" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_k" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_l" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_;" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_'" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_Z" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_X" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_C" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_V" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_B" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_N" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_M" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_alligator_left" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_alligator_right" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_question" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_z" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_x" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_c" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_v" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_b" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_n" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_m" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_comma" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_period" class="keyboard_key" style="visibility: hidden;"></div>
+<div id="div_slash" class="keyboard_key" style="visibility: hidden;"></div>
 			</div> 
 			
 		</div>
@@ -391,7 +1168,7 @@
 	const page_load_time = Date.now();
 	var container = document.querySelector('container');
 	const letters = document.getElementById('row-letters');
-
+	update_active_keyboard_layout(level_configurations.level_1_home);
 
 	//score keeping variables
 	var score = 33;
@@ -591,8 +1368,7 @@ console.warn("⚠️ Error: 'timer_display' element not found in DOM yet!");
 		//THIS method needs to be updated to use a different 
 		//array than the keys, for check showing only in play for
 		//level
-			//************EXTRA TAB FOR THE NEW LOGIC
-			//********************************************/
+		/*
 			const keys = document.getElementById('row-keys');
 			if (keys) {
 					keyboard_el.forEach(item => {
@@ -611,12 +1387,13 @@ console.warn("⚠️ Error: 'timer_display' element not found in DOM yet!");
 						keys.appendChild(new_div);
 					}); //foreach keboard elemtent
 			}//if keys
+		*/
 			/*************************************************/
 	} // end populate_keys
 	// And run it once 
 
 	//Run once functions
-	start_countdown(90)
+	start_countdown(2400);
 	populate_keys(); 
 
 	function create_letter() {
@@ -793,8 +1570,8 @@ console.warn("⚠️ Error: 'timer_display' element not found in DOM yet!");
 	}
 
 
-	var create_letter_interval = 3000;
-	var update_game_interval = 50;
+	var create_letter_interval = 2000;
+	var update_game_interval = 100;
 
 	setInterval(() => {
 		if (!	is_paused){
@@ -807,6 +1584,86 @@ console.warn("⚠️ Error: 'timer_display' element not found in DOM yet!");
 			update_game();
 		}
 	}, update_game_interval);
+
+
+
+
+
+
+function update_active_keyboard_layout(allowedCharacters) {
+    for (let asciiCode = 32; asciiCode <= 126; asciiCode++) {
+        let char = String.fromCharCode(asciiCode);
+        let elementId = convertCharacterToDivId(char);
+        let keyElement = document.getElementById(elementId);
+        
+        if (!keyElement) continue;
+
+        // Reset text content cleanly
+        keyElement.innerHTML = "";
+        
+        if (allowedCharacters.includes(char)) {
+            // UNHIDE FIREWALL: Use standard visibility rules instead of display blocks
+            keyElement.style.visibility = "visible"; 
+            keyElement.style.opacity = "1";
+            
+            // Inject the clean single string character character
+            keyElement.innerHTML = char;
+            keyElement.classList.add("keyboard-key-active");
+            
+            // Font balancing corrections
+            if (char === "@") {
+                keyElement.style.fontSize = "12px";
+            } else if (char === "`") {
+                keyElement.style.fontSize = "22px";
+                keyElement.style.transform = "translateY(2px)";
+            } else {
+                keyElement.style.fontSize = "3rem";
+                keyElement.style.transform = "none";
+            }
+        } else {
+            // HIDE FIREWALL: Make the key character vanish without breaking coordinate space
+            keyElement.style.visibility = "hidden";
+            keyElement.style.opacity = "0";
+            keyElement.classList.remove("keyboard-key-active");
+        }
+    }
+}
+
+
+
+
+
+
+
+
+function convertCharacterToDivId(char) {
+    const structuralNamingOverrides = {
+        ' ': 'div_space', '!': 'div_exclamation', '}': 'div_close_brace',
+        '+': 'div_plus', '=': 'div_equals', '-': 'div_dash', '_': 'div_underscore',
+        '.': 'div_period', ',': 'div_comma', '/': 'div_slash', '?': 'div_question',
+        ';': 'div_semicolon', ':': 'div_colon', '`': 'div_backtick', '~': 'div_tilde',
+        '#': 'div_hash', '$': 'div_dollar', '%': 'div_percent', '^': 'div_caret',
+        '&': 'div_ampersand', '*': 'div_asterisk', '(': 'div_open_paren', ')': 'div_close_paren',
+        '[': 'div_open_bracket', ']': 'div_close_bracket', '{': 'div_open_brace',
+        '\\': 'div_backslash', '|': 'div_pipe', '"': 'div_quote', "'": 'div_apostrophe',
+        '<': 'div_less_than', '>': 'div_greater_than'
+    };
+
+    if (structuralNamingOverrides[char]) {
+        return structuralNamingOverrides[char];
+    }
+    
+    // Capitalization Rule: Matches your HTML pattern where 'G' becomes 'div_g_upper'
+    if (char >= 'A' && char <= 'Z') {
+        return `div_${char.toLowerCase()}_upper`;
+    }
+    
+    // Default fallback for numbers and standard lowercase letters (e.g., div_a, div_7)
+    return `div_${char}`;
+}
+
+
+
 
 </script>
 </html>
