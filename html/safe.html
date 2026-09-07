@@ -22,10 +22,17 @@
 		--chosen_font_size: 3rem;
 		--drift_char: -48;
 		--floor: 380;
-		--shift_right: 5;
+		--shift_right: 8;
+		--y_ceiling: 30;
 		--fake: 1;  
 			
 	}
+
+
+
+
+
+
 	.container {
 		width: var(--container_width);
 		height: var(--container_height);
@@ -99,40 +106,87 @@
 
 	</style>
 	<script>
+		var root_style
+		let drift_char = 0;
+		let floor = 0;
+		let letter_height = 0;
+		let shift_right = 0;
+		let y_ceiling = 0;
+		let brand_color1 ="";
+		let brand_color2 = "";
+		let brand_color3 = "";
+		let brand_color4 = "";
+		let brand_color5 = "";
+		var root_styles;
+
 		//pull magic numbers from css style
-		const root_styles = 								getComputedStyle
-			(document.documentElement);
-
-		const drift_char = 
-			parseInt(root_styles.
-			getPropertyValue('--drift_char').trim());
-
-		const floor = 
-			parseInt(root_styles.
-			getPropertyValue('--floor').trim());
+		try{
+			root_styles = 									getComputedStyle
+				(document.documentElement);
+		} catch(e) {
+			console.warn("All hope is lost there is no root");
+		}
 
 
-		const letter_height =
-			parseInt(root_styles.
-			getPropertyValue('--letter_height').trim());
 
-		let shift_right =
-			parseInt(root_styles.
-			getPropertyValue('--shift_right').trim());
+		try{
+			//pull magic numbers from css style
+			root_styles = 
+				getComputedStyle
+				(document.documentElement);
 
-		//returns hex string
-		var brand_color5 = 
-			root_styles.
-			getPropertyValue('--brand_color5');
-		
+			//return integers
+			drift_char = 
+				parseInt(root_styles.
+				getPropertyValue('--drift_char').trim());
+
+			floor = 
+				parseInt(root_styles.
+				getPropertyValue('--floor').trim());
+
+
+			letter_height =
+				parseInt(root_styles.
+				getPropertyValue
+				('--letter_height').trim());
+
+			shift_right =
+				parseInt(root_styles.
+				getPropertyValue('--shift_right').trim());
+
+			y_ceiling = 
+				parseInt(root_styles.getPropertyValue
+					('--y_cieling')); 
+
+			//return hex string(s)
+			brand_color1 = 
+				root_styles.
+				getPropertyValue('--brand_color1');
+			brand_color2 = 
+				root_styles.
+				getPropertyValue('--brand_color2');
+			brand_color3 = 
+				root_styles.
+				getPropertyValue('--brand_color3');
+			brand_color4 = 
+				root_styles.
+				getPropertyValue('--brand_color4');
+			brand_color5 = 
+				root_styles.
+				getPropertyValue('--brand_color5');
+		} catch(e) {
+			console.log("Getting root style vars from css: "
+				  + e);
+		}
+
+
+
+		//some useful/useless?  arrays
 		const numbers = '1234567890_+';
 		const numbers_shift = "~!@#$%^&*()-=";		
 		const alpha = 'abcdefghijklmnopkqrstuvwxyz';
 		const alpha_shift = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		const symbols = `[]{}\|<>?/;:'"`;
-
-		//Bridged over from css root element
-		const root = document.documentElement;
 
 		//changes here for levels
 		// coming soon
@@ -145,7 +199,7 @@
 		];
 
 
-	const level_configurations = {
+		const level_configurations = {
 		level_1_home:
 			['a','s','d','f','g',
 			'h','j','k','l',';'],
@@ -168,10 +222,10 @@
 		level_7_symbols:
 			[';',':','[',']','{','}','<','>',
 			',','.','/','?','\\','|'] 
-	};
-
+		};
 
 		let y_floor = 30;
+		shift_right = 8;
 		var keyboard_el = [
 			{ id: 'div_tilde', text: '~', 
 				x: (shift_right + 30), y: y_floor},
@@ -385,7 +439,7 @@
 		<div id="container" class="container">
 			<div id="row-letters" class="row-letters">
 				<span class="score-item">Timer:
-				<span id ="timer_display"></span></span>
+				<span id ="timer_display">0</span></span>
 				<span class="score-item">Score: 
 				<span id="score"></span></span>
 				<span id="score-pct"></span>
@@ -396,26 +450,22 @@
 				<span id="gremlin"></span></span>
 				<span id="gremlin-pct"></span> 
 			</div>
-
-
 			<div id="row-keys" class="row-keys">
 				<img src="../img/keyboard2.png" 
 				alt="keyboard asset image">
 			</div> 
-			
 		</div>
 </body>
 <script>
 	const page_load_time = Date.now();
 	var container = document.querySelector('container');
 	const letters = document.getElementById('row-letters');
-	update_active_keyboard_layout(level_configurations.level_1_home);
 
 	//score keeping variables
-	var score = 33;
+	var score = 34;
 	var gremlin = 33;
 	var toaster = 33;	
-	var total_points = 99;
+	var total_points = 100;
 
 	let game_timer_seconds = 60;
 	let timer_interval = null;
@@ -438,53 +488,82 @@
 	
 	function start_countdown(seconds) {
 		let context_time = seconds;
-		let timer_display = document.getElementById("timer_display");
+		let timer_display = 0;
+
+		try{ 
+			timer_display = 
+				document.getElementById
+				("timer_display");
+
+		} catch(e) {
+			timer_display = 0;
+		} finally {
+			console.log(`⚠️ Error: 'timer_display' 
+			not found in DOM yet!`);
+		}
 
 		if (!timer_display){
-console.warn("⚠️ Error: 'timer_display' element not found in DOM yet!");
+			console.warn(`Error: 'timer_display'  
+				element not found in DOM yet!`);
+			timer_display = 0;
 		        return;
     		}
+		//this needs to output min/sec format but for now....
 		timer_display.innerHTML = context_time;
-
-		timer_interval_id = setInterval(() => {
-			context_time --;
-			let liveSpan = document.getElementById("timer_display");
-			if (liveSpan) {
-				document.getElementById
-					("timer_display")
-					.innerHTML = context_time;
-			}
-			if (context_time <= 0){
-				clearInterval(timer_interval_id);
-				clearInterval(falling_interval_id);
-				reset_game("Clock");
-			}
-		}, 1000);
+		try{
+			timer_interval_id = setInterval(() => {
+				context_time --;
+				let liveSpan = 	
+				document.getElementById("timer_display");
+				if (liveSpan) {
+					document.getElementById
+						("timer_display")
+						.innerHTML = context_time;
+				}
+				if (context_time <= 0){
+					clearInterval(timer_interval_id);
+					clearInterval(falling_interval_id);
+					reset_game("Clock");
+				}
+			}, 1000);
+		} catch(e) {
+			console.log("Well it had to happen sometime.");
+		}
 	}
 	
 
 	class arcade_soring_system {
 			constructor() {
-		this.win_threshold_pct = 75;
-		}
-	evaluate() {
+			this.win_threshold_pct = 75;
+			}
+
+		evaluate() {
 		try {
 			const total = score + gremlin + toaster;
 			if (total === 0) return;
 
 			// Clear output vars (values)
-			let user_pct	= Math.round((score / total) * 100);
-			let gremlin_pct = Math.round((gremlin / total) * 100);
-			let toaster_pct = Math.round((toaster / total) * 100);
- 
-			// Update percentage spans 
+			let user_pct = Math.round
+				((score / total) * 100);
+
+			let gremlin_pct = Math.round(
+				(gremlin / total) * 100);
+			let toaster_pct = Math.round(
+				(toaster / total) * 100);
+			try{
+ 			// Update percentage spans 
 			if (document.getElementById('score-pct'))
 				document.getElementById('score-pct')
 				.textContent = user_pct + "%";
-			if (document.getElementById('gremlin-pct')) 						document.getElementById('gremlin-pct')
-				.textContent = gremlin_pct + "%";
-			if (document.getElementById('toaster-pct')) 						document.getElementById('toaster-pct').
+			if (document.getElementById('gremlin-pct')) 						document.getElementById
+					('gremlin-pct')
+					.textContent = gremlin_pct + "%";
+			if (document.getElementById('toaster-pct')) 					document.getElementById
+				('toaster-pct').
 				textContent = toaster_pct + "%";
+			} catch(e) {
+				console.log("What the snack, sugar shack?");
+			}
 
 			//Milestone Check
 			if (user_pct >= 75){
@@ -497,42 +576,46 @@ console.warn("⚠️ Error: 'timer_display' element not found in DOM yet!");
 
 			if (total >= 10) {
 				if (user_pct >= this.win_threshold_pct)
-					if (typeof end_game === 'function')
-						end_game("victory_knockout");
-				if (gremlin_pct >= this.win_threshold_pct)   
+					if (typeof end_game === 
+						'function')							end_game("victory_knockout");
+					if (gremlin_pct >=
+						this.win_threshold_pct)   
 					if (typeof end_game === 'function') 
-						end_game("gremlin_knockout");
-				if (toaster_pct >= this.win_threshold_pct)   
-				if (typeof end_game === 'function') 
-					end_game("toaster_knockout");
-			}
+						end_game
+						("gremlin_knockout");
+				if (toaster_pct >= 
+				this.win_threshold_pct)   
+					if (typeof end_game ==='function') 
+						end_game("toaster_knockout");
+			}//if
 
-		} catch (error) {
+		 } catch (error) {
 			console.warn(
-			"Shut her down Clancey, she's pumping mud!!:", 
+			`Shut her down Clancey, she's pumping mud!!:`, 
 			error.message);
-		}
-	} //evaluate
+		}//end try/catch
+		} //evaluate
 
-	// Private helper mimicking clean encapsulation
-	_update_display(element_id, value) {
-		const el = document.getElementById(element_id);
-		if (el) {
-			// account for all possible field types
-			// div span node form input etc.
-			el.textContent = value;
-			el.innerHTML = value;
+		// Private helper methods mimicking clean encapsulation
+		_update_display(element_id, value) {
+			console.log("_update_display getting some press");
+			const el = document.getElementById(element_id);
+			if (el) {
+				// account for all possible field types
+				// div span node form input etc.
+				el.textContent = value;
+				el.innerHTML = value;
 
-			// If it's a form input node, 
-			// update its value track too
-			if ('value' in el) {
-				el.value = value;
+				// If it's a form input node, 
+				// update its value track too
+				if ('value' in el) {
+					el.value = value;
 				}
 			}
 		}
 
 		_trigger_match_resolution(outcome) {
-			console.log
+			console.log("_trigger_matach_resolution getting press");
 			(`Match concluded via rules engine: ${outcome}`);
 			// Call your custom reset logic here
 			if (typeof yourResetFunction === 'function') {
@@ -606,11 +689,18 @@ console.warn("⚠️ Error: 'timer_display' element not found in DOM yet!");
 	
 
 	function populate_keys() {
-		//THIS method needs to be updated to use a different 
+		//if (keys) method needs to be updated to use a different 
 		//array than the keys, for check showing only in play for
-		//level (matching the characters
-		
+		//level (has an extra "tab" indentation in case it has
+		//To be wrapped in try/catch or if
+		try{
 			const keys = document.getElementById('row-keys');
+		} catch (e){
+			//This has been working, just take the hit for now.
+		}
+
+
+			///////////////////////////////////////////////////
 			if (keys) {
 					keyboard_el.forEach(item => {
 						const new_div = document.
@@ -631,13 +721,13 @@ console.warn("⚠️ Error: 'timer_display' element not found in DOM yet!");
 						(new_div);
 					}); //foreach keboard elemtent
 			}//if keys
-		
+			///////////////////////////////////////////////		
 	/*************************************************/
 	} // end populate_keys
 	// And run it once 
 
 	//Run once functions
-	start_countdown(2400);
+	start_countdown(1800);
 	populate_keys(); 
 
 	function create_letter() {
@@ -697,14 +787,17 @@ console.warn("⚠️ Error: 'timer_display' element not found in DOM yet!");
 				`translateX(-50%) translateY(${l.y}px)`;
 			}
 
+			///////////////////////////////////////////////
 			//Starts at 4 and increases until the
 			//floor is only 200 (need a var for tolerance)
-			//HERE MAGIC NUMBER
+			//HERE MAGIC dynamic_floor_height = 200, 
+			//and tolerance = 4
 			let dynamic_floor = letter_height - 
 				(stacked_floor_height * 4);
 			if (dynamic_floor < 200) { 
 				dynamic_floor = 200; 
 			}
+			/////////////////////////////////////////////////
     
 			// The stacking boundary condition check
 			if (l.y > dynamic_floor) {
@@ -747,6 +840,7 @@ console.warn("⚠️ Error: 'timer_display' element not found in DOM yet!");
 		// 1. Core Safety Gates
 		if (Date.now() - page_load_time < 2000) return; 
 			if (event.repeat) return; 
+
 			//anti-theft because the gremlin is evil
 			//and steals the shift 15 times before the
 			//user can press a key
@@ -754,12 +848,9 @@ console.warn("⚠️ Error: 'timer_display' element not found in DOM yet!");
 				return; 
 			if (event.key.length !== 1) return; 
 
+			//This may need to be examined at wpm or english
 			// !!! FIX FOR THE SPACEBAR TRAP !!!
 			// If Spacebar isn't part of your active 
-			// matrix level, ignore it completely
-			// Can the space be added now?
-			// If I wait until I get to 'words'
-			// level and have more a complicated implementation
 			if (event.key === " ") {
 				return; 
 			}
@@ -777,7 +868,8 @@ console.warn("⚠️ Error: 'timer_display' element not found in DOM yet!");
 					active_letters[match_index];
 				matched_letter.element.remove();
 				active_letters.splice(match_index, 1);
-				score += 1; //user score
+				//user score
+				score += 1; 
 				scoring_engine.evaluate();
 				evaluate_arcade_match_rules();
 			} else {
@@ -804,15 +896,17 @@ console.warn("⚠️ Error: 'timer_display' element not found in DOM yet!");
 
 	function reset_game(champion) {
 		total = 100;
-		score = 33;
+		score = 34;
 		toaster = 33;
 		gremlin = 33;
 		clearInterval(falling_interval_id);
 		clearInterval(timer_interval_id);
+		//Need to reset/clear whatever, the timer interval	
+		//When timer is allowed to expire it gets a weird value
+		//Maybe what was left, I looked away and poof it was gone
 		console.log(`🏆 MATCH OVER! Domination by: ${champion}`);
-		console.log(`Game over loop triggered. Winner: ${champion}`);
+		console.log(`Game over loop triggered. Winner: 					${champion}`);
 	}
-
 
 	var create_letter_interval = 2000;
 	var update_game_interval = 100;
@@ -828,86 +922,6 @@ console.warn("⚠️ Error: 'timer_display' element not found in DOM yet!");
 			update_game();
 		}
 	}, update_game_interval);
-
-
-
-
-
-
-function update_active_keyboard_layout(allowedCharacters) {
-    for (let asciiCode = 32; asciiCode <= 126; asciiCode++) {
-        let char = String.fromCharCode(asciiCode);
-        let elementId = convertCharacterToDivId(char);
-        let keyElement = document.getElementById(elementId);
-        
-        if (!keyElement) continue;
-
-        // Reset text content cleanly
-        keyElement.innerHTML = "";
-        
-        if (allowedCharacters.includes(char)) {
-            // UNHIDE FIREWALL: Use standard visibility rules instead of display blocks
-            keyElement.style.visibility = "visible"; 
-            keyElement.style.opacity = "1";
-            
-            // Inject the clean single string character character
-            keyElement.innerHTML = char;
-            keyElement.classList.add("keyboard-key-active");
-            
-            // Font balancing corrections
-            if (char === "@") {
-                keyElement.style.fontSize = "12px";
-            } else if (char === "`") {
-                keyElement.style.fontSize = "22px";
-                keyElement.style.transform = "translateY(2px)";
-            } else {
-                keyElement.style.fontSize = "3rem";
-                keyElement.style.transform = "none";
-            }
-        } else {
-            // HIDE FIREWALL: Make the key character vanish without breaking coordinate space
-            keyElement.style.visibility = "hidden";
-            keyElement.style.opacity = "0";
-            keyElement.classList.remove("keyboard-key-active");
-        }
-    }
-}
-
-
-
-
-
-
-
-
-function convertCharacterToDivId(char) {
-    const structuralNamingOverrides = {
-        ' ': 'div_space', '!': 'div_exclamation', '}': 'div_close_brace',
-        '+': 'div_plus', '=': 'div_equals', '-': 'div_dash', '_': 'div_underscore',
-        '.': 'div_period', ',': 'div_comma', '/': 'div_slash', '?': 'div_question',
-        ';': 'div_semicolon', ':': 'div_colon', '`': 'div_backtick', '~': 'div_tilde',
-        '#': 'div_hash', '$': 'div_dollar', '%': 'div_percent', '^': 'div_caret',
-        '&': 'div_ampersand', '*': 'div_asterisk', '(': 'div_open_paren', ')': 'div_close_paren',
-        '[': 'div_open_bracket', ']': 'div_close_bracket', '{': 'div_open_brace',
-        '\\': 'div_backslash', '|': 'div_pipe', '"': 'div_quote', "'": 'div_apostrophe',
-        '<': 'div_less_than', '>': 'div_greater_than'
-    };
-
-    if (structuralNamingOverrides[char]) {
-        return structuralNamingOverrides[char];
-    }
-    
-    // Capitalization Rule: Matches your HTML pattern where 'G' becomes 'div_g_upper'
-    if (char >= 'A' && char <= 'Z') {
-        return `div_${char.toLowerCase()}_upper`;
-    }
-    
-    // Default fallback for numbers and standard lowercase letters (e.g., div_a, div_7)
-    return `div_${char}`;
-}
-
-
-
 
 </script>
 </html>
