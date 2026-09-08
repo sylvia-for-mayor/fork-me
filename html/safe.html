@@ -17,8 +17,10 @@
 		--brand_color3: #FFFFFF;
 		--brand_color4: #000000;
 		--brand_color5: #777777; 
+
 		--chosen_font_size: 3rem;
 		--drift_char: -48;
+
 		--floor: 0;
 		--shift_right: 8;
 		--y_ceiling: 30;
@@ -27,11 +29,11 @@
 
 		--falling_interval_id: "timer_display";
 		--timer_interval_id: "timer_display";
-		--count_down_interval: 360;
+		--count_down_interval: 15;
 
 		--win_threshold_pct: 75;
 		--min_actions_required: 1;
-		--timer_display: 0;
+		--timer_display: 60;
 		--game_timer_seconds: 60;
 		--every_second: 1000;
 		--dynamic_floor_limit: 200;
@@ -146,12 +148,14 @@
 		var count_down_interval;
 
 
-		var score;
-		var gremlin;
-		var toaster;	
-		var total_points;
+		//var score;
+		//var gremlin;
+		//var toaster;	
+		//var total_points;
 
 		var stacked_floor_height;
+		var chosen_font_size;
+		drift_char;
 
 
 		//pull magic numbers from css style
@@ -168,6 +172,21 @@
 			root_styles = 
 				getComputedStyle
 				(document.documentElement);
+
+			chosen_font_size = 
+				parseInt(root_styles.
+				getPropertyValue
+				('--chosen_font_size').trim());
+
+
+			drift_char: 
+				parseInt(root_styles.
+				getPropertyValue
+				('--drift_char').trim());
+				
+
+
+
 
 			score = 
 				parseInt(root_styles.
@@ -543,7 +562,7 @@
 </body>
 		<div id="container" class="container">
 			<div id="row-letters" class="row-letters">
-				<span class="score-item">Timer:
+				<span class="score-item">
 				<span id ="timer_display">0</span></span>
 				<span class="score-item">Score: 
 				<span id="score"></span></span>
@@ -579,28 +598,30 @@
 	let random_letter = ' ';
 	let is_paused = false;
 
-	function start_countdown(seconds) {
-		let context_time = seconds;
-
-		timer_display.innerHTML = context_time;
-
-		timer_interval_id = setInterval(() => {
-			context_time --;
-		let liveSpan = document.
-			getElementById("timer_display");
-			if (liveSpan) {
+	//context_time and timer_display already initialized at the top
+	function start_countdown() {
+		try{
+			let context_time = timer_display;
+			timer_display.innerHTML = timer_display;
+			timer_interval_id = setInterval(() => {
 				document.getElementById
 					("timer_display")
 					.innerHTML = context_time;
-			}
-			if (context_time <= 0){
-				clearInterval(timer_interval_id);
-				clearInterval(falling_interval_id);
-				reset_game("Clock");
-			}
-		}, every_second); 
+					console.log("WTH: ", context_time);
+
+				if (context_time <= 1){
+					context_time = 0;
+				console.log("REALY(after): ", context_time);
+					clearInterval(timer_interval_id);
+					clearInterval(falling_interval_id);
+					reset_game("Clock");
+				}		
+			}, every_second);
+		}catch  (e) {
+			console.log("WHAT WAS THE PROBLEM?", e);
+		} 
 	}
-	
+	start_countdown(timer_display);
 
 	class arcade_soring_system {
 			constructor() {
@@ -805,12 +826,12 @@
 		//left edge position for new falling letter
 		//These percentages stop the letters from
 		//getting out of bounds.
-		let random_percent = Math.random() * 98;
-		//let random_percent = 98
+		//let random_percent = Math.random() * 97.5;
+		random_percent = 94.6;
 
 		//catch the edges at 3rem  MOVE THESE UP
 		if (random_percent < 2.9) random_percent = 2.9;
-		if (random_percent > 98) random_percent = 98;
+		if (random_percent > 94.6) random_percent = 94.6;
 
 		el.style.left = `${random_percent}%`;
 		const letter_object = {
@@ -888,16 +909,13 @@
 				}
 			}//end if l.y > dynamic floor
 		}//for
-	}//end update_game() -- runs via interval
+	}//end update_game()
 
 	window.addEventListener('keydown', (event) => {
-		// 1. Core Safety Gates
+		//core safety gates
 		if (Date.now() - page_load_time < 2000) return; 
 			if (event.repeat) return; 
 
-			//anti-theft because the gremlin is evil
-			//and steals the shift 15 times before the
-			//user can press a key
 			if (event.ctrlKey || event.altKey || event.metaKey) 
 				return; 
 			if (event.key.length !== 1) return; 
@@ -935,18 +953,9 @@
 	});
 
 	document.addEventListener("visibilitychange", () => {
-		//use true/false provided with 
-		//documenet to toggle
 			is_paused = document.hidden;
 	});
 
-	//Not even sure if these are used.....
-	function pause_game(){
-			is_paused = true;
-	}
-	function resume_game() {
-			is_paused = false;
-	}
 
 	function reset_game(champion) {
 		//grab the values before clearing
@@ -961,6 +970,8 @@
 		clearInterval(timer_interval_id);
 		console.log("WINNER: ", champion);
 	}
+	//run once to start the scoring for the game
+	reset_game("God");
 	setInterval(() => {
 		if (!	is_paused){
 			create_letter();
