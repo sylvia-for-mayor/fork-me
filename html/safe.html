@@ -8,10 +8,8 @@
 	:root {
 		--container_width: 889px;
 		--container_height: 668px;
-
 		--letter_width: 889px;
 		--letter_height: 428px;
-
 		--keyboard_width: 889px;
 		--keyboard_height: 240px;
 		--brand_color1: #8A0303;
@@ -21,18 +19,30 @@
 		--brand_color5: #777777; 
 		--chosen_font_size: 3rem;
 		--drift_char: -48;
-		--floor: 380;
+		--floor: 0;
 		--shift_right: 8;
 		--y_ceiling: 30;
-		--fake: 1;  
-			
+		--create_letter_interval: 3000;
+		--update_game_interval 1000;
+
+		--falling_interval_id: "timer_display";
+		--timer_interval_id: "timer_display";
+		--count_down_interval: 360;
+
+		--win_threshold_pct: 75;
+		--min_actions_required: 1;
+		--timer_display: 0;
+		--game_timer_seconds: 60;
+		--every_second: 1000;
+		--dynamic_floor_limit: 200;
+		--dynamic_floor: 200;
+		--stacked_floor_height: 0;
+		--score: 34;
+		--gremlin: 33;
+		--toaster: 33;
+		--total_points: 100;
+		--fake: 1; 
 	}
-
-
-
-
-
-
 	.container {
 		width: var(--container_width);
 		height: var(--container_height);
@@ -61,7 +71,7 @@
 		overflow: hidden;
 	}	
 	.row-keys {
-		display: block;			 
+		display: block;	
 		width: var(--keyboard_width) !important;	
 		height: var(--keyboard_height) !important;
 		min-height: var(--keyboard_height) !important;
@@ -87,7 +97,7 @@
 		z-index: 10;
 		color: var(--brand_color1);
 		font-weight: bold;
-		//font-size: var(--chosen_font_size);
+		font-size: var(--chosen_font_size);
 		font-size: 3rem;
 		transform: translate(-50%, -50%);
 		
@@ -108,7 +118,7 @@
 	<script>
 		var root_style
 		let drift_char = 0;
-		let floor = 0;
+		let floor = 380;
 		let letter_height = 0;
 		let shift_right = 0;
 		let y_ceiling = 0;
@@ -119,14 +129,38 @@
 		let brand_color5 = "";
 		var root_styles;
 
+
+		var create_letter_interval;
+		var update_game_interval;
+		var win_threshold_pct;
+		var min_actions_required;
+		var timer_display;
+		var every_second;
+		var dynamic_floor;
+		var dynamic_floor_limit;
+		//let falling_interval_id = 0;
+		var game_timer_seconds;
+
+		var falling_interval_id;
+		var timer_interval_id;
+		var count_down_interval;
+
+
+		var score;
+		var gremlin;
+		var toaster;	
+		var total_points;
+
+		var stacked_floor_height;
+
+
 		//pull magic numbers from css style
 		try{
-			root_styles = 									getComputedStyle
-				(document.documentElement);
+			root_styles = getComputedStyle
+			(document.documentElement);
 		} catch(e) {
 			console.warn("All hope is lost there is no root");
 		}
-
 
 
 		try{
@@ -135,7 +169,50 @@
 				getComputedStyle
 				(document.documentElement);
 
+			score = 
+				parseInt(root_styles.
+				getPropertyValue
+				('--score').trim());
+
+			gremlin = 
+				parseInt(root_styles.
+				getPropertyValue
+				('--gremlin').trim());
+
+			toaster = 
+				parseInt(root_styles.
+				getPropertyValue
+				('--toaster').trim());
+
+
+			var total_points = 
+				parseInt(root_styles.
+				getPropertyValue
+				('--toaster').trim());
+
+
+
+			dynamic_floor_limit = 
+				parseInt(root_styles.
+				getPropertyValue
+				('--dynamic_floor_limit').trim());
 			//return integers
+			every_second =
+				parseInt(root_styles.
+				getPropertyValue('--every_second').trim());
+
+			timer_display = 
+				parseInt(root_styles.
+				getPropertyValue('--timer_display').trim());
+
+			game_timer_seconds =
+				parseInt(root_styles.
+				getPropertyValue('--game_timer_seconds').trim());
+			count_down_interval = 
+				parseInt(root_styles.
+				getPropertyValue
+				('--count_down_interval').trim());
+
 			drift_char = 
 				parseInt(root_styles.
 				getPropertyValue('--drift_char').trim());
@@ -143,6 +220,12 @@
 			floor = 
 				parseInt(root_styles.
 				getPropertyValue('--floor').trim());
+
+			stacked_floor_height = 
+				parseInt(root_styles.
+				getPropertyValue
+				('--stacked_floor_height').trim());
+
 
 
 			letter_height =
@@ -156,9 +239,32 @@
 
 			y_ceiling = 
 				parseInt(root_styles.getPropertyValue
-					('--y_cieling')); 
+					('--y_cieling').trim()); 
 
-			//return hex string(s)
+			falling_interval_id =
+				parseInt(root_styles.
+				getPropertyValue									('--falling_interval_id').trim());
+
+			timer_interval_id =
+				parseInt(root_styles.
+				getPropertyValue										('--timer_interval_id'));		
+
+			create_letter_interval	= 
+				parseInt(root_styles.
+				getPropertyValue								('--create_letter_interval').trim());
+
+			update_game_interval  = 
+				parseInt(root_styles.
+				getPropertyValue
+				('--update_game_interval').trim());
+
+			win_threshold_pct =
+				parseInt(root_styles.
+				getPropertyValue('--win_threshold_pct').trim());
+
+			min_actions_required = 
+				parseInt(root_styles.
+				getPropertyValue('min_actions_required').trim());
 			brand_color1 = 
 				root_styles.
 				getPropertyValue('--brand_color1');
@@ -174,12 +280,11 @@
 			brand_color5 = 
 				root_styles.
 				getPropertyValue('--brand_color5');
+			
 		} catch(e) {
-			console.log("Getting root style vars from css: "
-				  + e);
+			console.log
+			("Getting root style vars from css: "  + e);
 		}
-
-
 
 		//some useful/useless?  arrays
 		const numbers = '1234567890_+';
@@ -192,7 +297,7 @@
 		// coming soon
 		const matrix = [
 			alpha, 
-			//alpha_shift, 
+			alpha_shift, 
 			//numbers, 
 			//numbers_shift, 
 			//symbols
@@ -457,88 +562,55 @@
 		</div>
 </body>
 <script>
+	//pointers to the divs
 	const page_load_time = Date.now();
 	var container = document.querySelector('container');
 	const letters = document.getElementById('row-letters');
 
-	//score keeping variables
-	var score = 34;
-	var gremlin = 33;
-	var toaster = 33;	
-	var total_points = 100;
-
-	let game_timer_seconds = 60;
-	let timer_interval = null;
-	let win_threshold_pct = 75;
-	let min_actions_required = 20;
+	var timer_interval; //assigned and initialized at once
 
 	const keys = document.getElementById('row-keys');
 	const el = document.createElement('div');
+
 
 	var active_letters = [];
 	var row = []
 		
 	let random_letter = ' ';
-	let 	is_paused = false;
+	let is_paused = false;
 
-	let stacked_floor_height = 0;
-
-	let falling_interval_id = null;
-	let timer_interval_id = null;
-	
 	function start_countdown(seconds) {
 		let context_time = seconds;
-		let timer_display = 0;
 
-		try{ 
-			timer_display = 
-				document.getElementById
-				("timer_display");
-
-		} catch(e) {
-			timer_display = 0;
-		} finally {
-			console.log(`⚠️ Error: 'timer_display' 
-			not found in DOM yet!`);
-		}
-
-		if (!timer_display){
-			console.warn(`Error: 'timer_display'  
-				element not found in DOM yet!`);
-			timer_display = 0;
-		        return;
-    		}
-		//this needs to output min/sec format but for now....
 		timer_display.innerHTML = context_time;
-		try{
-			timer_interval_id = setInterval(() => {
-				context_time --;
-				let liveSpan = 	
-				document.getElementById("timer_display");
-				if (liveSpan) {
-					document.getElementById
-						("timer_display")
-						.innerHTML = context_time;
-				}
-				if (context_time <= 0){
-					clearInterval(timer_interval_id);
-					clearInterval(falling_interval_id);
-					reset_game("Clock");
-				}
-			}, 1000);
-		} catch(e) {
-			console.log("Well it had to happen sometime.");
-		}
+
+		timer_interval_id = setInterval(() => {
+			context_time --;
+		let liveSpan = document.
+			getElementById("timer_display");
+			if (liveSpan) {
+				document.getElementById
+					("timer_display")
+					.innerHTML = context_time;
+			}
+			if (context_time <= 0){
+				clearInterval(timer_interval_id);
+				clearInterval(falling_interval_id);
+				reset_game("Clock");
+			}
+		}, every_second); 
 	}
 	
 
 	class arcade_soring_system {
 			constructor() {
-			this.win_threshold_pct = 75;
+				this.win_threshold_pct = win_threshold_pct;
 			}
 
 		evaluate() {
 		try {
+			// Process the percentages due each player 
+			// (33 or 34 to 100%)
 			const total = score + gremlin + toaster;
 			if (total === 0) return;
 
@@ -562,10 +634,11 @@
 				('toaster-pct').
 				textContent = toaster_pct + "%";
 			} catch(e) {
-				console.log("What the snack, sugar shack?");
+				console.log(`What the snack? , 
+				Sugar shack!`);
 			}
 
-			//Milestone Check
+			//Milestone Check ("%" end to game)
 			if (user_pct >= 75){
 				reset_game("User");			
 			}else if (toaster_pct >= 75) {
@@ -574,19 +647,23 @@
 				reset_game("Gremlin");
 			}
 
+			//HERE MAGIC number to fix when I get it
+			//It was set to 10, but the players alll get
+			// 33 and the percentages are "="
 			if (total >= 10) {
 				if (user_pct >= this.win_threshold_pct)
-					if (typeof end_game === 
-						'function')							end_game("victory_knockout");
+					if (typeof reset_game === 
+						'function')
+						reset_game("User");
 					if (gremlin_pct >=
 						this.win_threshold_pct)   
-					if (typeof end_game === 'function') 
-						end_game
-						("gremlin_knockout");
-				if (toaster_pct >= 
-				this.win_threshold_pct)   
-					if (typeof end_game ==='function') 
-						end_game("toaster_knockout");
+					if (typeof reset_game === 
+						'function') 
+						reset_game("Gremlin");
+				if (toaster_pct >= this.win_threshold_pct)   
+					if (typeof reset_game ===
+						'function')
+						reset_game("Toaster");
 			}//if
 
 		 } catch (error) {
@@ -595,41 +672,12 @@
 			error.message);
 		}//end try/catch
 		} //evaluate
-
-		// Private helper methods mimicking clean encapsulation
-		_update_display(element_id, value) {
-			console.log("_update_display getting some press");
-			const el = document.getElementById(element_id);
-			if (el) {
-				// account for all possible field types
-				// div span node form input etc.
-				el.textContent = value;
-				el.innerHTML = value;
-
-				// If it's a form input node, 
-				// update its value track too
-				if ('value' in el) {
-					el.value = value;
-				}
-			}
-		}
-
-		_trigger_match_resolution(outcome) {
-			console.log("_trigger_matach_resolution getting press");
-			(`Match concluded via rules engine: ${outcome}`);
-			// Call your custom reset logic here
-			if (typeof yourResetFunction === 'function') {
-				reset_game("Rules");
-			}
-		}
 	}
 	// Instantiate the scoring system globally once
 	const scoring_engine = new arcade_soring_system();
 
 
 	function evaluate_arcade_match_rules(force_time_up = false) {
-		console.log
-		("evaluate_arcade_match_rules=>force_time_up getting press");
 		try {
 			const total = score + gremlin + toaster;
 	
@@ -643,21 +691,23 @@
 			
 				if (score === max_score) {
 					alert("TIME UP! Victory on raw points!");
-					if (typeof end_game === 'function') 
-					end_game("victory_points");
+					if (typeof reset_game === 'function') 
+					reset_game("victory_points");
 
 				} else if (gremlin === max_score) {
-				alert("TIME UP! Gremlin wins on points!");
-				if (typeof end_game === 'function') 
-					end_game("gremlin_loss");
+					alert(
+					"TIME UP! Gremlin wins on points!");
+				if (typeof reset_game === 'function') 
+					reset_game("gremlin_loss");
 				} else {
 					alert
 					("TIME UP! Toaster wins on points!");
-					if (typeof end_game === 'function') 
-					end_game("toaster_loss");
+					if (typeof reset_game === 'function') 
+					reset_game("toaster_loss");
 				}
 				return;
 			} //end if time up
+
 		
   			// --- CONTINUOUS PERCENTAGE KNOCKOUT RULES ---
   			if (total < min_actions_required) return;
@@ -669,15 +719,15 @@
 			// Immediate Knockout criteria if someone 
 			// captures threshold percent of the game space
 			if (user_pct >= win_threshold_pct) {
-				if (typeof end_game === 'function')
-					end_game("victory_knockout");
+				if (typeof reset_game === 'function')
+					reset_game("victory_knockout");
 			} else 
 			if (gremlin_pct >= win_threshold_pct) {
-				if (typeof end_game === 'function') 
-					end_game("gremlin_knockout");
+				if (typeof reset_game === 'function') 
+					reset_game("gremlin_knockout");
 			} else if (toaster_pct >= win_threshold_pct) {
-				if (typeof end_game === 'function')
-					end_game("toaster_knockout");
+				if (typeof reset_game === 'function')
+					reset_game("toaster_knockout");
 			}
 		} catch (e) {
 			// Prevents silent thread death completely
@@ -721,15 +771,14 @@
 						(new_div);
 					}); //foreach keboard elemtent
 			}//if keys
-			///////////////////////////////////////////////		
+		}	///////////////////////////////////////////////		
 	/*************************************************/
-	} // end populate_keys
-	// And run it once 
-
 	//Run once functions
-	start_countdown(1800);
+	start_countdown(count_down_interval)
 	populate_keys(); 
 
+
+	//////////////////////////////////////////////MAIN GAME LOOP 1
 	function create_letter() {
 		if (is_paused) return;
 
@@ -754,23 +803,31 @@
 		el.innerText = random_letter;
 
 		//left edge position for new falling letter
-		let random_percent = Math.random() * 95;
+		//These percentages stop the letters from
+		//getting out of bounds.
+		let random_percent = Math.random() * 98;
+		//let random_percent = 98
+
+		//catch the edges at 3rem  MOVE THESE UP
+		if (random_percent < 2.9) random_percent = 2.9;
+		if (random_percent > 98) random_percent = 98;
+
 		el.style.left = `${random_percent}%`;
-		
 		const letter_object = {
 			element: el,
 			char: char,
-			y: -50,
-			speed: Math.random() * 2 + 1.5
+			y: -48,
+			speed: Math.random() * 2 + 1.5    
 		};
 		//push the new letter out to the "row-letters" div
 		document.getElementById('row-letters').appendChild(el);
 		active_letters.push(letter_object);
-	} //end create_letter()
+	} //end create_letter() -- runs via interval
 
+	let active_speed = 0.2;
 	function update_game() {
 		if (is_paused) return;
-		if ( toaster >= 300 ) {
+		if (toaster >= 350) {
 			reset_game();
 		}
 
@@ -779,26 +836,23 @@
 			let l = active_letters[i];
     	
 			// Core falling math and transform application
-			let active_speed = Number(l.speed) || 2; 
-			l.y = (Number(l.y) || 0) + Math.floor(active_speed);
-    	
+			//let active_speed = Number(l.speed) || 2; 
+			
+			active_speed += 0.001;
+			if (active_speed >= 1.8) active_speed = 1.8;					l.y = (Number(l.y) || 0) + Math.floor(active_speed);
+
+	
 			if (l.element && l.element.style) {
 				l.element.style.transform = 
 				`translateX(-50%) translateY(${l.y}px)`;
 			}
 
-			///////////////////////////////////////////////
-			//Starts at 4 and increases until the
-			//floor is only 200 (need a var for tolerance)
-			//HERE MAGIC dynamic_floor_height = 200, 
-			//and tolerance = 4
-			let dynamic_floor = letter_height - 
+			dynamic_floor = letter_height - 
 				(stacked_floor_height * 4);
-			if (dynamic_floor < 200) { 
-				dynamic_floor = 200; 
+			if (dynamic_floor < dynamic_floor_limit) { 
+				dynamic_floor = dynamic_floor_limit; 
 			}
-			/////////////////////////////////////////////////
-    
+    	
 			// The stacking boundary condition check
 			if (l.y > dynamic_floor) {
 				// Visual Freeze: Change color and leave the 
@@ -895,22 +949,18 @@
 	}
 
 	function reset_game(champion) {
+		//grab the values before clearing
+
+		//I won't label the percentage starting points are magic
+		//because they are readable here and make sense
 		total = 100;
 		score = 34;
 		toaster = 33;
 		gremlin = 33;
 		clearInterval(falling_interval_id);
 		clearInterval(timer_interval_id);
-		//Need to reset/clear whatever, the timer interval	
-		//When timer is allowed to expire it gets a weird value
-		//Maybe what was left, I looked away and poof it was gone
-		console.log(`🏆 MATCH OVER! Domination by: ${champion}`);
-		console.log(`Game over loop triggered. Winner: 					${champion}`);
+		console.log("WINNER: ", champion);
 	}
-
-	var create_letter_interval = 2000;
-	var update_game_interval = 100;
-
 	setInterval(() => {
 		if (!	is_paused){
 			create_letter();
