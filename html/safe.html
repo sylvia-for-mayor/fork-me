@@ -603,8 +603,8 @@
 		try{
 			let context_time = timer_display;
 			timer_display.innerHTML = timer_display;
-			context_time --;
 			timer_interval_id = setInterval(() => {
+				context_time --;
 				document.getElementById
 					("timer_display")
 					.innerHTML = context_time;
