@@ -12,6 +12,7 @@
 		--letter_height: 428px;
 		--keyboard_width: 889px;
 		--keyboard_height: 240px;
+
 		--brand_color1: #8A0303;
 		--brand_color2: #C0C0C0;  
 		--brand_color3: #FFFFFF;
@@ -29,11 +30,11 @@
 
 		--falling_interval_id: "timer_display";
 		--timer_interval_id: "timer_display";
-		--count_down_interval: 15;
+		--count_down_interval: 90;
 
 		--win_threshold_pct: 75;
-		--min_actions_required: 1;
-		--timer_display: 60;
+		--min_actions_required: 10;
+		--timer_display: 90;
 		--game_timer_seconds: 60;
 		--every_second: 1000;
 		--dynamic_floor_limit: 200;
@@ -119,7 +120,7 @@
 	</style>
 	<script>
 		var root_style
-		let drift_char = 0;
+		var drift_char;
 		let floor = 380;
 		let letter_height = 0;
 		let shift_right = 0;
@@ -155,7 +156,6 @@
 
 		var stacked_floor_height;
 		var chosen_font_size;
-		drift_char;
 
 
 		//pull magic numbers from css style
@@ -183,9 +183,6 @@
 				parseInt(root_styles.
 				getPropertyValue
 				('--drift_char').trim());
-				
-
-
 
 
 			score = 
@@ -562,8 +559,6 @@
 </body>
 		<div id="container" class="container">
 			<div id="row-letters" class="row-letters">
-				<span class="score-item">
-				<span id ="timer_display">0</span></span>
 				<span class="score-item">Score: 
 				<span id="score"></span></span>
 				<span id="score-pct"></span>
@@ -598,6 +593,7 @@
 	let random_letter = ' ';
 	let is_paused = false;
 
+	var context_time = timer_display;
 	//context_time and timer_display already initialized at the top
 	function start_countdown() {
 		try{
@@ -605,21 +601,15 @@
 			timer_display.innerHTML = timer_display;
 			timer_interval_id = setInterval(() => {
 				context_time --;
-				document.getElementById
-					("timer_display")
-					.innerHTML = context_time;
-					console.log("WTH: ", context_time);
-
-				if (context_time <= 1){
-					context_time = 0;
-				console.log("REALY(after): ", context_time);
-					clearInterval(timer_interval_id);
-					clearInterval(falling_interval_id);
+				if (context_time <= 0){
+					context_time = 0;		
+					//clearInterval(timer_interval_id);
+					//clearInterval(falling_interval_id);
 					reset_game("Clock");
 				}		
 			}, every_second);
 		}catch  (e) {
-			console.log("WHAT WAS THE PROBLEM?", e);
+			console.log(e);
 		} 
 	}
 	start_countdown(timer_display);
@@ -670,7 +660,7 @@
 			}
 
 			//HERE MAGIC number to fix when I get it
-			//It was set to 10, but the players alll get
+			//It was set to 10, but the players all get
 			// 33 and the percentages are "="
 			if (total >= 10) {
 				if (user_pct >= this.win_threshold_pct)
@@ -761,14 +751,10 @@
 	
 
 	function populate_keys() {
-		//if (keys) method needs to be updated to use a different 
-		//array than the keys, for check showing only in play for
-		//level (has an extra "tab" indentation in case it has
-		//To be wrapped in try/catch or if
 		try{
 			const keys = document.getElementById('row-keys');
 		} catch (e){
-			//This has been working, just take the hit for now.
+			console.log("Too early to get keys: ", keys);
 		}
 
 
@@ -796,7 +782,7 @@
 		}	///////////////////////////////////////////////		
 	/*************************************************/
 	//Run once functions
-	start_countdown(count_down_interval)
+	start_countdown(count_down_interval);
 	populate_keys(); 
 
 
@@ -810,17 +796,23 @@
 			Math.random() 
 			* matrix.length
 		);
-		row = matrix[which];
+		const row = matrix[which];
 
 		const index = Math.floor(Math.random() * row.length);
 		elmts = row[index];
 
 		// assign the actual element just 
 		// randomized to random_letter 
-		random_letter = elmts;
+		const random_letter = elmts;
 		let char = random_letter;
+		const initial_y = drift_char * 2;
 
 		var el = document.createElement('div');
+		el.y = initial_y;		
+
+		//el.style.display = "none";
+		//el.top = 2 * drift_char;
+
 		el.classList.add('falling-letter');
 		el.innerText = random_letter;
 
@@ -835,16 +827,21 @@
 		if (random_percent > 94.6) random_percent = 94.6;
 
 		el.style.left = `${random_percent}%`;
+		el.style.top = `${initial_y}px`;
 		const letter_object = {
 			element: el,
 			char: char,
-			y: -48,
-			speed: Math.random() * 2 + 1.5    
+			y: initial_y ,
+			speed: Math.random() * 2 + 1.5,
 		};
+
+
 		//push the new letter out to the "row-letters" div
 		document.getElementById('row-letters').appendChild(el);
+		el.style.display = "block";		
 		active_letters.push(letter_object);
 	} //end create_letter() -- runs via interval
+
 
 	let active_speed = 0.2;
 	function update_game() {
@@ -877,8 +874,6 @@
     	
 			// The stacking boundary condition check
 			if (l.y > dynamic_floor) {
-				// Visual Freeze: Change color and leave the 
-				//frozen element on the screen
 				if (l.element) {
 					l.element.style.opacity = "0.5";
 					l.element.style.color = brand_color5;
@@ -894,7 +889,7 @@
 				//calculations array loop memory
 				active_letters.splice(i, 1);
         
-				//tick goes to global the rising floor
+				//tick goes to global rising floor
 				stacked_floor_height += 1;
         	
 				// Score 1 for the mighty toaster
@@ -958,6 +953,8 @@
 	});
 
 
+
+
 	function reset_game(champion) {
 		//grab the values before clearing
 
@@ -967,6 +964,7 @@
 		score = 34;
 		toaster = 33;
 		gremlin = 33;
+		context_time = timer_display;
 		clearInterval(falling_interval_id);
 		clearInterval(timer_interval_id);
 		console.log("WINNER: ", champion);
