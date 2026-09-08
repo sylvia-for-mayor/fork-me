@@ -18,24 +18,19 @@
 		--brand_color3: #FFFFFF;
 		--brand_color4: #000000;
 		--brand_color5: #777777; 
-
 		--chosen_font_size: 3rem;
 		--drift_char: -48;
-
 		--floor: 0;
-		--shift_right: 8;
 		--y_ceiling: 30;
 		--create_letter_interval: 3000;
 		--update_game_interval 1000;
-
 		--falling_interval_id: "timer_display";
 		--timer_interval_id: "timer_display";
 		--count_down_interval: 90;
-
 		--win_threshold_pct: 75;
 		--min_actions_required: 10;
 		--timer_display: 90;
-		--game_timer_seconds: 60;
+		--game_timer_seconds: 600;
 		--every_second: 1000;
 		--dynamic_floor_limit: 200;
 		--dynamic_floor: 200;
@@ -44,6 +39,7 @@
 		--gremlin: 33;
 		--toaster: 33;
 		--total_points: 100;
+
 		--fake: 1; 
 	}
 	.container {
@@ -123,7 +119,6 @@
 		var drift_char;
 		let floor = 380;
 		let letter_height = 0;
-		let shift_right = 0;
 		let y_ceiling = 0;
 		let brand_color1 ="";
 		let brand_color2 = "";
@@ -147,8 +142,6 @@
 		var falling_interval_id;
 		var timer_interval_id;
 		var count_down_interval;
-
-
 		//var score;
 		//var gremlin;
 		//var toaster;	
@@ -156,7 +149,6 @@
 
 		var stacked_floor_height;
 		var chosen_font_size;
-
 
 		//pull magic numbers from css style
 		try{
@@ -178,12 +170,10 @@
 				getPropertyValue
 				('--chosen_font_size').trim());
 
-
-			drift_char: 
+			drift_char =
 				parseInt(root_styles.
 				getPropertyValue
 				('--drift_char').trim());
-
 
 			score = 
 				parseInt(root_styles.
@@ -206,13 +196,11 @@
 				getPropertyValue
 				('--toaster').trim());
 
-
-
 			dynamic_floor_limit = 
 				parseInt(root_styles.
 				getPropertyValue
 				('--dynamic_floor_limit').trim());
-			//return integers
+
 			every_second =
 				parseInt(root_styles.
 				getPropertyValue('--every_second').trim());
@@ -224,6 +212,7 @@
 			game_timer_seconds =
 				parseInt(root_styles.
 				getPropertyValue('--game_timer_seconds').trim());
+
 			count_down_interval = 
 				parseInt(root_styles.
 				getPropertyValue
@@ -242,16 +231,10 @@
 				getPropertyValue
 				('--stacked_floor_height').trim());
 
-
-
 			letter_height =
 				parseInt(root_styles.
 				getPropertyValue
 				('--letter_height').trim());
-
-			shift_right =
-				parseInt(root_styles.
-				getPropertyValue('--shift_right').trim());
 
 			y_ceiling = 
 				parseInt(root_styles.getPropertyValue
@@ -264,7 +247,6 @@
 			timer_interval_id =
 				parseInt(root_styles.
 				getPropertyValue										('--timer_interval_id'));		
-
 			create_letter_interval	= 
 				parseInt(root_styles.
 				getPropertyValue								('--create_letter_interval').trim());
@@ -295,25 +277,25 @@
 				getPropertyValue('--brand_color4');
 			brand_color5 = 
 				root_styles.
-				getPropertyValue('--brand_color5');
+				getPropertyValue('--brand_color5');			
 			
 		} catch(e) {
-			console.log
+			console.log("ERROR");
 			("Getting root style vars from css: "  + e);
 		}
+
 
 		//some useful/useless?  arrays
 		const numbers = '1234567890_+';
 		const numbers_shift = "~!@#$%^&*()-=";		
 		const alpha = 'abcdefghijklmnopkqrstuvwxyz';
 		const alpha_shift = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-		const symbols = `[]{}\|<>?/;:'"`;
 
 		//changes here for levels
 		// coming soon
 		const matrix = [
 			alpha, 
-			alpha_shift, 
+			alpha_shift 
 			//numbers, 
 			//numbers_shift, 
 			//symbols
@@ -345,212 +327,216 @@
 			',','.','/','?','\\','|'] 
 		};
 
-		let y_floor = 30;
-		shift_right = 8;
+		console.log("here we go cheerio");
+		let y_floor = 32;
+		//hard coded offset to go with keyboard positions
+		//which are all hardcoded anyway
+		shift_right_key = 8;
 		var keyboard_el = [
 			{ id: 'div_tilde', text: '~', 
-				x: (shift_right + 30), y: y_floor},
+				x: (shift_right_key + 30), y: y_floor},
 			{ id: 'div_bang', text: '!', 
-				x: (shift_right + 94), y: y_floor},
+				x: (shift_right_key + 94), y: y_floor},
 			{id: 'div_at', text: '@',
-				x: (shift_right + 148), y: y_floor},
+				x: (shift_right_key + 148), y: y_floor},
 			{id: 'div_pound', text: '#', 
-				x: (shift_right + 212), y: y_floor},
+				x: (shift_right_key + 212), y: y_floor},
 			{id: 'div_dollar',text: '$', 
-				x: (shift_right + 273), y: y_floor},
+				x: (shift_right_key + 273), y: y_floor},
 			{id: 'div_percent',text: '%', 
-				x:(shift_right + 332), y: y_floor},
+				x:(shift_right_key + 332), y: y_floor},
 			{id: 'div_carat', text: '^', 
-				x:(shift_right + 392),  y: y_floor},
+				x:(shift_right_key + 392),  y: y_floor},
 			{id: 'div_amp', text: '&', 
-				x:(shift_right + 455),  y: y_floor},
+				x:(shift_right_key + 455),  y: y_floor},
 			{id: 'div_star',text: '*', 
-				x:(shift_right + 514), y: y_floor},
+				x:(shift_right_key + 514), y: y_floor},
 			{id: 'div_lparen',text: '(', 
-				x:(shift_right + 576), y: y_floor},
+				x:(shift_right_key + 576), y: y_floor},
 			{id: 'div_rparen', text: ')', 
-				x:(shift_right + 642), y: y_floor},
+				x:(shift_right_key + 642), y: y_floor},
 			{id: 'div_underscore', text: '_', 
-				x:(shift_right + 698), y: y_floor - 5},
+				x:(shift_right_key + 698), y: y_floor - 5},
 			{id: 'div_plus',text: '+', 
-				x:(shift_right + 758), y: y_floor + 5},
+				x:(shift_right_key + 758), y: y_floor + 5},
 			
 			//numbers row unshifted
 			{ id: "div_`", text: "`",
-				x:(shift_right + 20), y: y_floor},
+				x:(shift_right_key + 20), y: y_floor},
 			{ id: 'div_1', text: '1', 
-				x: (shift_right + 94), y: y_floor },
+				x: (shift_right_key + 94), y: y_floor },
 			{id: 'div_2', text: '2', 
-				x: (shift_right + 151), y: y_floor },
+				x: (shift_right_key + 151), y: y_floor },
 			{id: 'div_3', text: '3', 
-				x: (shift_right + 212), y: y_floor },
+				x: (shift_right_key + 212), y: y_floor },
 			{id: 'div_4',text: '4', 
-				x: (shift_right + 273), y: y_floor },
+				x: (shift_right_key + 273), y: y_floor },
 			{id: 'div_5',text: '5', 
-				x:(shift_right + 333), y: y_floor },
+				x:(shift_right_key + 333), y: y_floor },
 			{id: 'div_6', text: '6',
-				x:(shift_right + 392),  y: y_floor },
+				x:(shift_right_key + 392),  y: y_floor },
 			{id: 'div_7', text: '7', 
-				x:(shift_right + 455),  y: y_floor },
+				x:(shift_right_key + 455),  y: y_floor },
 			{id: 'div_8',text: '8', 
-				x:(shift_right + 518), y: y_floor},
+				x:(shift_right_key + 518), y: y_floor},
 			{id: 'div_9',text: '9', 
-				x:(shift_right + 580), y: y_floor },
+				x:(shift_right_key + 580), y: y_floor },
 			{id: 'div_0', text: '0', 
-				x:(shift_right + 640), y: y_floor },
+				x:(shift_right_key + 640), y: y_floor },
 			{id: 'div_minus', text: '-', 
-				x:(shift_right + 698), y: y_floor },
+				x:(shift_right_key + 698), y: y_floor },
 			{id: 'div_equal',text: '=', 
-				x:(shift_right + 758), y: y_floor },
+				x:(shift_right_key + 758), y: y_floor },
 		
 			//alpha shifted	(top row of 3 alpha rows)
 			{ id: 'div_Q', text: 'Q', 
-				x: (shift_right + 118), y: (y_floor += 60) },
+				x: (shift_right_key + 118), y: (y_floor += 60) },
 			{id: 'div_W', text: 'W', 
-				x: (shift_right + 178), y: y_floor },
+				x: (shift_right_key + 178), y: y_floor },
 			{id: 'div_E', text: 'E', 
-				x: (shift_right + 244), y: y_floor },
+				x: (shift_right_key + 244), y: y_floor },
 			{id: 'div_R',text: 'R', 
-				x: (shift_right + 302), y: y_floor },
+				x: (shift_right_key + 302), y: y_floor },
 			{id: 'div_T',text: 'T', 
-				x:(shift_right + 365), y: y_floor },
+				x:(shift_right_key + 365), y: y_floor },
 			{id: 'div_Y', text: 'Y', 
-				x:(shift_right + 424),  y:y_floor },
+				x:(shift_right_key + 424),  y:y_floor },
 			{id: 'div_U', text: 'U', 
-				x:(shift_right + 486),  y: y_floor },
+				x:(shift_right_key + 486),  y: y_floor },
 			{id: 'div_I',text: 'I', 
-				x:(shift_right + 548), y: y_floor },
+				x:(shift_right_key + 548), y: y_floor },
 			{id: 'div_O',text: 'O', 
-				x:(shift_right + 604), y: y_floor },
+				x:(shift_right_key + 604), y: y_floor },
 			{id: 'div_P', text: 'P', 
-				x:(shift_right + 666), y: y_floor },
+				x:(shift_right_key + 666), y: y_floor },
 			{id: 'div_{',  text: '{', 
-				x:(shift_right + 732), y: y_floor },
+				x:(shift_right_key + 732), y: y_floor },
 			{id: 'div_}', text: '}', 
-				x:(shift_right + 792), y:  y_floor},
+				x:(shift_right_key + 792), y:  y_floor},
 			{id: 'div_back_sl',text: '|', 
-				x:(shift_right + 851), y: y_floor },
+				x:(shift_right_key + 851), y: y_floor },
 			
 			//alpha unshifted (top row of 3 alpha rows)
 			{ id: 'div_q', text: 'q', 
-				x: (shift_right + 118), y: y_floor },
+				x: (shift_right_key + 118), y: y_floor },
 			{id: 'div_w', text: 'w', 
-				x: (shift_right + 182), y: y_floor },
+				x: (shift_right_key + 182), y: y_floor },
 			{id: 'div_e', text: 'e', 
-				x: (shift_right + 246), y: y_floor },
+				x: (shift_right_key + 246), y: y_floor },
 			{id: 'div_r',text: 'r', 
-				x: (shift_right + 308), y: y_floor },
+				x: (shift_right_key + 308), y: y_floor },
 			{id: 'div_t',text: 't', 
-				x:(shift_right + 364), y: y_floor },
+				x:(shift_right_key + 364), y: y_floor },
 			{id: 'div_y', text: 'y', 
-				x:(shift_right + 428),  y: y_floor },
+				x:(shift_right_key + 428),  y: y_floor },
 			{id: 'div_u', text: 'u', 
-				x:(shift_right + 488),  y:  y_floor },
+				x:(shift_right_key + 488),  y:  y_floor },
 			{id: 'div_i',text: 'i', 
-				x:(shift_right + 548), y: y_floor },
+				x:(shift_right_key + 548), y: y_floor },
 			{id: 'div_o',text: 'o', 
-				x:(shift_right + 608), y: y_floor },
+				x:(shift_right_key + 608), y: y_floor },
 			{id: 'div_p', text: 'p', 
-				x:(shift_right + 666), y:y_floor },
+				x:(shift_right_key + 666), y:y_floor },
 			{id: 'div_[',  text: '[', 
-				x:(shift_right + 738), y: y_floor },
+				x:(shift_right_key + 738), y: y_floor },
 			{id: 'div_]', text: ']', 
-				x:(shift_right + 792), y: y_floor  },
+				x:(shift_right_key + 792), y: y_floor  },
 			{id: 'div_back_sl',text: '\\', 
-				x:(shift_right + 851), y: y_floor },
+				x:(shift_right_key + 851), y: y_floor },
 		
 			//alpha shifted (middle row of 3 alpha rows)
 			{ id: 'div_A', text: 'A', 
-				x: (shift_right + 132), y: (y_floor += 60) },
+				x: (shift_right_key + 132), y: (y_floor += 60) },
 			{id: 'div_S', text: 'S', 
-				x: (shift_right + 196), y: y_floor },
+				x: (shift_right_key + 196), y: y_floor },
 			{id: 'div_D', text: 'D', 
-				x: (shift_right + 256), y: y_floor },
+				x: (shift_right_key + 256), y: y_floor },
 			{id: 'div_F',text: 'F', 
-				x: (shift_right + 314), y: y_floor },
+				x: (shift_right_key + 314), y: y_floor },
 			{id: 'div_G',text: 'G', 
-				x:(shift_right + 368), y: y_floor },
+				x:(shift_right_key + 368), y: y_floor },
 			{id: 'div_H', text: 'H',
-				x:(shift_right + 432),  y: y_floor },
+				x:(shift_right_key + 432),  y: y_floor },
 			{id: 'div_J', text: 'J',
-				x:(shift_right + 504),  y: y_floor },
+				x:(shift_right_key + 504),  y: y_floor },
 			{id: 'div_K',text: 'K',
-				x:(shift_right + 560), y:y_floor },
+				x:(shift_right_key + 560), y:y_floor },
 			{id: 'div_L',text: 'L', 
-				x:(shift_right + 624), y:y_floor },
+				x:(shift_right_key + 624), y:y_floor },
 			{id: 'div_:', text: ':', 
-				x:(shift_right + 682), y:y_floor },
+				x:(shift_right_key + 682), y:y_floor },
 			{id: 'div_"', text:'"',
-				x:(shift_right + 744), y:y_floor },
+				x:(shift_right_key + 744), y:y_floor },
 		
 			//alpha shifted (middle row of 3 alpha rows)
 			{ id: 'div_a', text: 'a', 
-				x: (shift_right + 132), y: y_floor },
+				x: (shift_right_key + 132), y: y_floor },
 			{id: 'div_s', text: 's', 
-				x: (shift_right + 196), y: y_floor },
+				x: (shift_right_key + 196), y: y_floor },
 			{id: 'div_d', text: 'd', 
-				x: (shift_right + 256), y: y_floor },
+				x: (shift_right_key + 256), y: y_floor },
 			{id: 'div_f',text: 'f', 
-				x: (shift_right + 318), y: y_floor },
+				x: (shift_right_key + 318), y: y_floor },
 			{id: 'div_g',text: 'g', 
-				x:(shift_right + 374), y: y_floor },
+				x:(shift_right_key + 374), y: y_floor },
 			{id: 'div_h', text: 'h',
-				x:(shift_right + 438),  y: y_floor },
+				x:(shift_right_key + 438),  y: y_floor },
 			{id: 'div_j', text: 'j',
-				x:(shift_right + 504),  y: y_floor },
+				x:(shift_right_key + 504),  y: y_floor },
 			{id: 'div_k',text: 'k',
-				x:(shift_right + 560), y: y_floor },
+				x:(shift_right_key + 560), y: y_floor },
 			{id: 'div_l',text: 'l', 
-				x:(shift_right + 624), y: y_floor },
+				x:(shift_right_key + 624), y: y_floor },
 			{id: 'div_;', text: ';', 
-				x:(shift_right + 682), y: y_floor },
+				x:(shift_right_key + 682), y: y_floor },
 			{id: "div_'", text:"'",
-				x:(shift_right + 744), y: y_floor },
+				x:(shift_right_key + 744), y: y_floor },
 		 	
 			//alpha shifted(y_floor row of 3 alpha rows)
 			{ id: 'div_Z', text: 'Z', 
-				x: (shift_right + 166), y: (y_floor += 60) },
+				x: (shift_right_key + 166), y: (y_floor += 60) },
 			{id: 'div_X', text: 'X', 
-				x: (shift_right + 224), y: y_floor },
+				x: (shift_right_key + 224), y: y_floor },
 			{id: 'div_C', text: 'C', 
-				x: (shift_right + 286), y: y_floor },
+				x: (shift_right_key + 286), y: y_floor },
 			{id: 'div_V',text: 'V', 
-				x: (shift_right + 346), y: y_floor },
+				x: (shift_right_key + 346), y: y_floor },
 			{id: 'div_B',text: 'B', 
-				x:(shift_right + 410), y: y_floor },
+				x:(shift_right_key + 410), y: y_floor },
 			{id: 'div_N', text: 'N',
-				x:(shift_right + 468),  y: y_floor },
+				x:(shift_right_key + 468),  y: y_floor },
 			{id: 'div_M', text: 'M',
-				x:(shift_right + 524),  y: y_floor },
+				x:(shift_right_key + 524),  y: y_floor },
 			{id: 'div_alligator_left',text: '<',
-				x:(shift_right + 590), y: y_floor },
+				x:(shift_right_key + 590), y: y_floor },
 			{id: 'div_alligator_right',text: '>', 
-				x:(shift_right + 654), y: y_floor },
+				x:(shift_right_key + 654), y: y_floor },
 			{id: 'div_question', text: '?', 
-				x:(shift_right + 718), y: y_floor },
+				x:(shift_right_key + 718), y: y_floor },
 		 		
 			//alpha unshifted(y_floor row of 3 alpha rows)
 			{ id: 'div_z', text: 'z', 
-				x: (shift_right + 168), y: y_floor },
+				x: (shift_right_key + 168), y: y_floor },
 			{id: 'div_x', text: 'x', 
-				x: (shift_right + 226), y: y_floor },
+				x: (shift_right_key + 226), y: y_floor },
 			{id: 'div_c', text: 'c', 
-				x: (shift_right + 288), y: y_floor },
+				x: (shift_right_key + 288), y: y_floor },
 			{id: 'div_v',text: 'v', 
-				x: (shift_right + 348), y: y_floor },
+				x: (shift_right_key + 348), y: y_floor },
 			{id: 'div_b',text: 'b', 
-				x:(shift_right + 410), y: y_floor },
+				x:(shift_right_key + 410), y: y_floor },
 			{id: 'div_n', text: 'n',
-				x:(shift_right + 470),  y: y_floor },
+				x:(shift_right_key + 470),  y: y_floor },
 			{id: 'div_m', text: 'm',
-				x:(shift_right + 526),  y: y_floor },
+				x:(shift_right_key + 526),  y: y_floor },
 			{id: 'div_comma',text: ',',
-				x:(shift_right + 590), y: y_floor },
+				x:(shift_right_key + 590), y: y_floor },
 			{id: 'div_period',text: '.', 
-				x:(shift_right + 654), y: y_floor },
+				x:(shift_right_key + 654), y: y_floor },
 			{id: 'div_slash', text: '/', 	
-				x:(shift_right + 718), y: y_floor }
+				x:(shift_right_key + 718), y: y_floor }
 		];
+		//borrowed shift right in temp for above shifts in x
 		window.keyboard_el = keyboard_el;
 	</script>
 
@@ -603,8 +589,6 @@
 				context_time --;
 				if (context_time <= 0){
 					context_time = 0;		
-					//clearInterval(timer_interval_id);
-					//clearInterval(falling_interval_id);
 					reset_game("Clock");
 				}		
 			}, every_second);
@@ -810,21 +794,22 @@
 		var el = document.createElement('div');
 		el.y = initial_y;		
 
-		//el.style.display = "none";
-		//el.top = 2 * drift_char;
-
 		el.classList.add('falling-letter');
 		el.innerText = random_letter;
 
 		//left edge position for new falling letter
 		//These percentages stop the letters from
-		//getting out of bounds.
-		//let random_percent = Math.random() * 97.5;
-		random_percent = 94.6;
+		//getting out of bounds
+		
+		let all = 100.00;
+		let left_edge = all - 96.9;
+		let right_edge = all - 3.1;
+		
+		let random_percent = 
+			Math.random() * (right_edge);
 
-		//catch the edges at 3rem  MOVE THESE UP
-		if (random_percent < 2.9) random_percent = 2.9;
-		if (random_percent > 94.6) random_percent = 94.6;
+		if (random_percent < left_edge) random_percent = left_edge;
+		if (random_percent > right_edge) random_percent = right_edge;
 
 		el.style.left = `${random_percent}%`;
 		el.style.top = `${initial_y}px`;
@@ -834,7 +819,6 @@
 			y: initial_y ,
 			speed: Math.random() * 2 + 1.5,
 		};
-
 
 		//push the new letter out to the "row-letters" div
 		document.getElementById('row-letters').appendChild(el);
@@ -895,8 +879,10 @@
 				// Score 1 for the mighty toaster
 				toaster += 1;
     
-				// Evaluate live competitive score thresholds
-				if (typeof scoring_engine !== 'undefined' && 
+				// Evaluate live competitive 
+				//score thresholds
+
+				if (typeof scoring_engine !== 'undefined' 				&& 
 				typeof scoring_engine.evaluate === 
 				'function')
 				{
