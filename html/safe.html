@@ -29,11 +29,13 @@
 		--count_down_interval: 90;
 		--win_threshold_pct: 75;
 		--min_actions_required: 10;
-		--timer_display: 90;
-		--game_timer_seconds: 600;
+		--timer_display: 120;
+		--game_timer_seconds: 1200;
 		--every_second: 1000;
+
 		--dynamic_floor_limit: 200;
-		--dynamic_floor: 200;
+		--dynamic_floor: 0;
+
 		--stacked_floor_height: 0;
 		--score: 34;
 		--gremlin: 33;
@@ -330,7 +332,7 @@
 		console.log("here we go cheerio");
 		let y_floor = 32;
 		//hard coded offset to go with keyboard positions
-		//which are all hardcoded anyway
+		//which are all harded anyway
 		shift_right_key = 8;
 		var keyboard_el = [
 			{ id: 'div_tilde', text: '~', 
@@ -789,7 +791,9 @@
 		// randomized to random_letter 
 		const random_letter = elmts;
 		let char = random_letter;
-		const initial_y = drift_char * 2;
+		//3rem so....
+		let initial_y = -48;
+		console.log("Y: ", initial_y);
 
 		var el = document.createElement('div');
 		el.y = initial_y;		
@@ -799,8 +803,8 @@
 
 		//left edge position for new falling letter
 		//These percentages stop the letters from
-		//getting out of bounds
-		
+		//getting out of bounds as a bounded, random percentage
+
 		let all = 100.00;
 		let left_edge = all - 96.9;
 		let right_edge = all - 3.1;
