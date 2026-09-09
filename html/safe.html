@@ -34,7 +34,7 @@
 		--game_timer_seconds: 1200;
 		--every_second: 1000;
 
-		--dynamic_floor_limit: 200;  
+		--dynamic_floor_limit: 300;  
 		--dynamic_floor: 0;
 		--stacked_floor_height: 0;
 
@@ -203,7 +203,7 @@
 				getPropertyValue
 				('--toaster').trim());
 
-			dynamic_floor_limit = 
+			dynamic_floor_limit = 		
 				parseInt(root_styles.
 				getPropertyValue
 				('--dynamic_floor_limit').trim());
@@ -292,7 +292,7 @@
 		}
 
 
-		//some useful/useless?  arrays
+		//useful/useless?  arrays
 		const numbers = '1234567890_+';
 		const numbers_shift = "~!@#$%^&*()-=";		
 		const alpha = 'abcdefghijklmnopkqrstuvwxyz';
@@ -302,8 +302,8 @@
 		// coming soon
 		const matrix = [
 			alpha, 
-			alpha_shift 
-			//numbers, 
+			//alpha_shift 
+			numbers, 
 			//numbers_shift, 
 			//symbols
 		];
@@ -335,7 +335,8 @@
 		};
 
 		let y_floor = 32;
-		//hard coded offset to go with keyboard positions
+		//hard coded offset to go with 
+		//keyboard positions
 		//which are all harded anyway
 		shift_right_key = 8;
 		var keyboard_el = [
@@ -594,7 +595,6 @@
 			timer_interval_id = setInterval(() => {
 				context_time --;
 				if (context_time <= 0){
-					context_time = 0;		
 					reset_game("Clock");
 				}		
 			}, every_second);
@@ -652,7 +652,7 @@
 			//HERE MAGIC number to fix when I get it
 			//It was set to 10, but the players all get
 			// 33 and the percentages are "="
-			if (total >= 10) {
+			if (total >= 1) {
 				if (user_pct >= this.win_threshold_pct)
 					if (typeof reset_game === 
 						'function')
@@ -747,29 +747,41 @@
 			console.log("Too early to get keys: ", keys);
 		}
 
+		//matrix holds active keys (Globally Scoped)
+		//keys hold all keyboard possible keys	
+		if (keys) {
+			let i = 0;
+			keyboard_el.forEach(item => {
+				const new_div = document.
+					createElement('div');	
+				new_div.id = item.id;
+				new_div.className =
+					'overlay-text';
+				new_div.textContent =
+					item.text;
+				new_div.style.left =
+					item.x + "px";
+				new_div.style.top =
+					item.y + "px";
 
-			///////////////////////////////////////////////////
-			if (keys) {
-					keyboard_el.forEach(item => {
-						const new_div = document.
-						createElement('div');	
-						new_div.id = item.id;
-						new_div.className =
-							'overlay-text';
-						new_div.textContent =
-							item.text;
-						new_div.style.left =
-							item.x + "px";
-						new_div.style.top =
-							item.y + "px";
-						//new_div.
-						//classList.add
-						//('hidden');
-						keys.appendChild
-						(new_div);
-					}); //foreach keboard elemtent
-			}//if keys
-		}	///////////////////////////////////////////////		
+				for (let i = 0; i < matrix.length; i++) {
+					if(matrix[i].includes(`${item.text}`))
+					{
+						console.log("HAZA", item.text);
+						keys.appendChild(new_div);	
+					}
+
+				}
+				//new_div.
+				//classList.add
+				//('hidden');
+				//keys.appendChild(new_div);
+
+
+
+			}); //foreach keboard elemtent
+		}
+	}	///////////////////////////////////////////////		
 	/*************************************************/
 	//Run once functions
 	start_countdown(count_down_interval);
@@ -838,10 +850,8 @@
 	let active_speed = 0.2;
 	function update_game() {
 		if (is_paused) return;
-		if (toaster >= 350) {
-			reset_game();
-		}
-
+		//Need a way to check for toaster wins here before letting anyone
+		//else proceed.
 		// Y-Movement 
 		for (let i = active_letters.length - 1; i >= 0; i--) {
 			let l = active_letters[i];
@@ -958,10 +968,11 @@
 		score = 34;
 		toaster = 33;
 		gremlin = 33;
-		context_time = timer_display;
 		clearInterval(falling_interval_id);
 		clearInterval(timer_interval_id);
 		console.log("WINNER: ", champion);
+		console.log("timer value: ", timer_display);
+		start_countdown(timer_display);
 	}
 	//run once to start the scoring for the game
 	reset_game("Computer");
