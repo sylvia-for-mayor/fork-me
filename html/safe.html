@@ -19,13 +19,14 @@
 		--brand_color4: #000000;
 		--brand_color5: #777777; 
 		--chosen_font_size: 3rem;
-		--drift_char: -48;
-		--floor: 0;
-		--y_ceiling: 30;
+
 		--create_letter_interval: 3000;
 		--update_game_interval 1000;
+
+
 		--falling_interval_id: "timer_display";
 		--timer_interval_id: "timer_display";
+
 		--count_down_interval: 90;
 		--win_threshold_pct: 75;
 		--min_actions_required: 10;
@@ -33,10 +34,14 @@
 		--game_timer_seconds: 1200;
 		--every_second: 1000;
 
-		--dynamic_floor_limit: 200;
+		--dynamic_floor_limit: 200;  
 		--dynamic_floor: 0;
-
 		--stacked_floor_height: 0;
+
+		--drift_char: -48;
+		--floor: 0;
+		--y_ceiling: 30;
+
 		--score: 34;
 		--gremlin: 33;
 		--toaster: 33;
@@ -57,14 +62,14 @@
 	}
 	.row-letters {
 		display: block;			 
-		width: 100%
+		width: 100% ;
 		width: var(--letter_width) !important;	
 		height: var(--letter_height) !important;
 		min-height: var(--letter_height) !important;
 		background-color: var(--brand_color1);
 		color: var(--brand_color2);
 		text-align: center;		 
-		font=size: var(==chosen_font_size);
+		font=size: var(--chosen_font_size);
 		margin-top: 0px;
 		margin-bottom: 0px;
 		position: relative;
@@ -329,7 +334,6 @@
 			',','.','/','?','\\','|'] 
 		};
 
-		console.log("here we go cheerio");
 		let y_floor = 32;
 		//hard coded offset to go with keyboard positions
 		//which are all harded anyway
@@ -793,7 +797,7 @@
 		let char = random_letter;
 		//3rem so....
 		let initial_y = -48;
-		console.log("Y: ", initial_y);
+		//console.log("Y: ", initial_y);
 
 		var el = document.createElement('div');
 		el.y = initial_y;		
@@ -854,8 +858,12 @@
 				`translateX(-50%) translateY(${l.y}px)`;
 			}
 
-			dynamic_floor = letter_height - 
+			//Rising dynamic floor
+			//console.log("Letter Height: ", letter_height);
+			//console.log("Height (falling) before: ", dynamic_floor); 
+			dynamic_floor = letter_height -
 				(stacked_floor_height * 4);
+
 			if (dynamic_floor < dynamic_floor_limit) { 
 				dynamic_floor = dynamic_floor_limit; 
 			}
@@ -880,15 +888,13 @@
 				//tick goes to global rising floor
 				stacked_floor_height += 1;
         	
-				// Score 1 for the mighty toaster
+				//And 1 for the mighty toaster
 				toaster += 1;
     
 				// Evaluate live competitive 
 				//score thresholds
 
-				if (typeof scoring_engine !== 'undefined' 				&& 
-				typeof scoring_engine.evaluate === 
-				'function')
+				if (typeof scoring_engine !== 'undefined' 					&& typeof scoring_engine.evaluate === 'function')
 				{
 					scoring_engine.evaluate();
 					evaluate_arcade_match_rules();
@@ -943,8 +949,6 @@
 	});
 
 
-
-
 	function reset_game(champion) {
 		//grab the values before clearing
 
@@ -960,7 +964,7 @@
 		console.log("WINNER: ", champion);
 	}
 	//run once to start the scoring for the game
-	reset_game("God");
+	reset_game("Computer");
 	setInterval(() => {
 		if (!	is_paused){
 			create_letter();
@@ -972,6 +976,5 @@
 			update_game();
 		}
 	}, update_game_interval);
-
 </script>
 </html>
