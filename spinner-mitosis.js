@@ -1,446 +1,353 @@
-window.addEventListener('DOMContentLoaded', () => {
-	// Canvas Setup
-	const canvas = document.getElementById('canvas') || 
-		document.querySelector('canvas');
-	const ctx = canvas.getContext('2d');
+// ==============================================
+// SPINNER-MITOSIS7.JS
+// Scaled Coordinates & Bottom-Locked Aspect Ratio
+// ==============================================
 
-	// Responsive Canvas Sizing with non-zero fallback
-	function resizeCanvas() {
-		canvas.width = window.innerWidth || 800;
-		canvas.height = window.innerHeight || 600;
-	}
-	resizeCanvas();
-	window.addEventListener('resize', resizeCanvas);
+let canvas;
+let ctx;
 
-	// Core Configuration & Spectrum Setup
-	const config = {
-		speed: 1.0,
-		gravity: 9.8
-	};
+let lastTime = 0;
+let screenCenterX = 400;
+let screenCenterY = 300;
 
-	const roygbivSpectrum = [0, 30, 60, 120, 240, 275, 300]; 
-	let currentSpectrumIndex = 0;
+// Baseline reference width used to scale particle graphics & physics
+const DESIGN_WIDTH = 800;
+let scale = 1.0;
 
-	//asset load layers 1 & 3
-	const bgImage = new Image();
-	bgImage.src = 'cannonLeft.png';
+// Layer Images
+const bgImg = new Image();
+bgImg.src = "cannonLeft.png";
 
-	const fgCannonImage = new Image();
-	fgCannonImage.src = 'cannonRight.png'; 
+const fgImg = new Image();
+fgImg.src = "cannonRight.png";
 
-	// Timeline & Physics Engine States
-	let lastTime = performance.now();
-	let rocketStage = 0; // 0 = Ascending, 1 = Blooming
-	let rocketY = canvas.height;
-	let centerTimeline = 0;
+const roygbivSpectrum = [
+  0, 30, 60, 120, 240, 275, 300
+];
+let currentSpectrumIndex = 0;
 
-	// Spinner Particle Storage
-	const activeSpinners = [];
+let activeSpinners = [];
+let activeRockets = [];
 
-	// Mutation State Tracking
-	const centerMutationState = {
-		gen1Branches: 5,
-		gen2Branches: 4,
-		gen3Branches: 3,
-		mutantTargetIndex: 0
-	};
+let launchCounter = 0;
+let globalSpawnTimer = 0;
+const LAUNCH_INTERVAL = 1.0;
 
-	// Central star physics state
-	const centerStar = {
-		x: canvas.width * 0.15, // start near left
-		y: canvas.height * 0.6,
-		velocityX: -3.5,        // negative x -> left
-		velocityY: -12.0,       // upward burst
-		gravity: 0.35,          // downward acceleration
-		rotation: 0,
-		spinSpeed: 0.05,        // continuous spin rate
-		radius: 40,
-		hue: 45
-	};
+// ==============================================
+// GRAPHICS & PARTICLES
+// ==============================================
 
-	function animateCenterStar() {
-		// 1. Move along parabola
-		centerStar.x += centerStar.velocityX;
-		centerStar.y += centerStar.velocityY;
-		centerStar.velocityY += 
-			centerStar.gravity;
+window.drawSpinnerGraphic = function(
+  x,
+  y,
+  radius,
+  alpha,
+  rotation,
+  hue,
+  skipRotation = false
+) {
+  if (alpha <= 0 || radius <= 0.1) return;
 
-		// 2. Continuous rotation
-		centerStar.rotation += 
-			centerStar.spinSpeed;
+  const safeHue = Number.isFinite(hue) ? hue : 0;
 
-		// 3. Spawn child particles along path
-		if (Math.random() < 0.4) {
-			spawnArcBurstCluster(
-				centerStar.x,
-				centerStar.y,
-				centerStar.radius,
-				centerStar.hue,
-				3
-			);
-		}
+  ctx.save();
+  ctx.translate(x, y);
+  if (!skipRotation) {
+    ctx.rotate(rotation);
+  }
+  ctx.globalAlpha = Math.min(1.0, Math.max(0, alpha));
 
-		// 4. Render the star at current position
-		drawSpinnerGraphic(
-			centerStar.x,
-			centerStar.y,
-			centerStar.radius,
-			1.0,
-			centerStar.rotation,
-			centerStar.hue
-		);
-	}
-	function updateCenterStar() {
-		// Parabolic position updates
-		centerStar.x += centerStar.velocityX;
-		centerStar.y += centerStar.velocityY;
-		
-		// Apply gravity to vertical speed
-		centerStar.velocityY += centerStar.gravity;
+  const points = 5;
+  const innerRadius = radius * 0.4;
 
-		// Continuous spinning motion
-		centerStar.rotation += centerStar.spinSpeed;
+  ctx.fillStyle = `hsl(${safeHue}, 100%, 65%)`;
+  ctx.beginPath();
+  for (let i = 0; i < points * 2; i++) {
+    const r = (i % 2 === 0) ? radius : innerRadius;
+    const angle = (i * Math.PI) / points;
+    const px = Math.cos(angle) * r;
+    const py = Math.sin(angle) * r;
+    if (i === 0) ctx.moveTo(px, py);
+    else ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+  ctx.fill();
 
-		// Optional: Spawn tip stars along the flight path
-		if (Math.random() < 0.4) {
-			spawnArcBurstCluster(
-				centerStar.x,
-				centerStar.y,
-				centerStar.radius,
-				centerStar.hue,
-				3
-			);
-		}
-	}
+  ctx.restore();
+};
 
-	function triggerCenterMutation() {
-		centerMutationState.gen1Branches = 
-			Math.floor(Math.random() * 5) + 4;
-		centerMutationState.gen2Branches = 						Math.floor(Math.random() * 4) + 4;
-		centerMutationState.gen3Branches = 
-			Math.floor(Math.random() * 3) + 4;
-		centerMutationState.mutantTargetIndex = 				Math.floor(
-			Math.random() * centerMutationState.gen1Branches);
-	}
+function spawnArcBurstCluster(x, y, baseRadius, count = 3) {
+  if (baseRadius <= 0.5) return;
 
-	
-	// Draw central star at negative/offscreen coords
-	drawSpinnerGraphic(
-		centerStar.x,
-		centerStar.y,
-		centerStar.radius,
-		1.0,                 // opacity
-		centerStar.rotation,
-		centerStar.hue
-	);
+  for (let i = 0; i < count; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    // Scale speed and gravity relative to canvas size
+    const speed = (60 + Math.random() * 120) * scale;
+    
+    const randomHueIndex = Math.floor(
+      Math.random() * roygbivSpectrum.length
+    );
+    const randomHue = roygbivSpectrum[randomHueIndex];
 
-	function spawnTipFlungStar(tipX, tipY, throwAngle, 
-	hue, parentRadius) {
-		//tangential fling direction 
-		//(perpendicular to radial angle + noise)
-		const flingAngle = throwAngle + (Math.PI / 2) + 				((Math.random() - 0.5) * 0.4);
-		const throwSpeed = 4 + Math.random() * 6;
+    activeSpinners.push({
+      x: x,
+      y: y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      gravity: 150 * scale,
+      radius: Math.max(3 * scale, baseRadius * 0.3),
+      alpha: 1.0,
+      rotation: Math.random() * Math.PI,
+      spinSpeed: (Math.random() - 0.5) * 8,
+      hue: randomHue,
+      life: 1.0,
+      decay: 0.6 + Math.random() * 0.5
+    });
+  }
+}
 
-		activeSpinners.push({
-			originX: tipX,
-			originY: tipY,
-			velocityX: Math.cos(flingAngle) * throwSpeed,
-			velocityY: Math.sin(flingAngle) * throwSpeed - 
-			//initial upward float
-			(1 + Math.random() * 3),
-			gravityScalar: 0.75 + Math.random() * 0.5,
-			birthTime: performance.now(),
-			//spawn instantly on passing tip
-			delayOffset: 0, 
-			baseSpinMultiplier: 0.6 + Math.random() * 0.8,
-			sizeJitter: 0.7 + Math.random() * 0.6,
-			//scale down, relative to the central star
-			radius: parentRadius * 0.2, 
-			baseHue: hue
-		});
-	}
+// ==============================================
+// ROCKET SYSTEM
+// ==============================================
 
-	//launch child particles when stage 1  is complete
-	function launchParabolicGeneration(
-	depth, originX, originY, baseRadius, limit) {
-		const count = 12;
-		for (let i = 0; i < count; i++) {
-			const angle = (i / count) * Math.PI * 2;
-			const speed = 5 + Math.random() * 5;
-			activeSpinners.push({
-				originX: originX,
-				originY: originY,
-				velocityX: Math.cos(angle) * 
-				speed,
-				// Upward burst
-				velocityY: Math.sin(angle) *
-				speed - 5,
-				birthTime: performance.now(),
-				delayOffset: Math.random() * 100,
-				baseSpinMultiplier: 0.8 + 
-				Math.random() * 0.4,
-				sizeJitter: 0.8 + Math.random() *
-				0.4,
-				radius: baseRadius * 0.3,
-				baseHue: 								roygbivSpectrum[
-				currentSpectrumIndex] || 0
-			});
-		}
-	}
-	function spawnArcBurstCluster(
-	centerX, centerY,
-	starRadius, hue,count) {
-		// Arc limits between 7:00 (125 deg) 
-		// and 12:00 (270 deg)
-		const minAngle = 125 * (Math.PI / 180);
-		const maxAngle = 270 * (Math.PI / 180);
+function spawnRocket() {
+  const mode = launchCounter % 3;
+  launchCounter++;
 
-		for (let i = 0; i < count; i++) {
-			const randomProgress = Math.random();
-			const arcAngle = minAngle + 
-				(randomProgress * 
-				(maxAngle - minAngle));
+  let directionMultiplier = 0;
+  if (mode === 0) directionMultiplier = -1;
+  else if (mode === 1) directionMultiplier = 0;
+  else if (mode === 2) directionMultiplier = 1;
 
-			const distanceOffset = 
-				starRadius * 
-				(0.8 + Math.random() * 0.4);
+  const hue = roygbivSpectrum[currentSpectrumIndex];
+  
+  currentSpectrumIndex =
+    (currentSpectrumIndex + 1) % roygbivSpectrum.length;
 
-			const spawnX = centerX + 
-				Math.cos(arcAngle) * 
-				distanceOffset;
-			const spawnY = centerY + 
-				Math.sin(arcAngle) * 
-				istanceOffset;
+  activeRockets.push({
+    stage: 0, 
+    x: screenCenterX,
+    y: canvas.height,
+    vx: (180 + Math.random() * 40) * directionMultiplier * scale,
+    vy: (mode === 1 ? -460 : -400) * scale,
+    gravity: 350 * scale,
+    radius: 14 * scale,
+    rotation: 0,
+    hue: hue,
+    timeline: 0
+  });
+}
 
-			spawnTipFlungStar(
-			spawnX, spawnY, arcAngle,
-			hue, starRadius);
-		}
-	}
+function updateRockets(deltaTime) {
+  for (let i = activeRockets.length - 1; i >= 0; i--) {
+    const r = activeRockets[i];
 
-// Main Physics and Frame Rendering Loop
-	function renderLoop() {
-		const now = performance.now();
-		let deltaTime = (now - lastTime) * 0.001;
-		lastTime = now;
+    // STAGE 0: Vertical Rocket Rise
+    if (r.stage === 0) {
+      r.y -= (480 * scale) * deltaTime;
 
-		let currentStarAngle = 
-			performance.now() * 0.005;
+      window.drawSpinnerGraphic(
+        screenCenterX,
+        r.y,
+        10 * scale,
+        1.0,
+        0,
+        r.hue,
+        true
+      );
 
-		if (deltaTime > 0.1) deltaTime = 0.016;
+      if (r.y <= screenCenterY) {
+        r.stage = 1;
+        r.x = screenCenterX;
+        r.y = screenCenterY;
+      }
+    } 
+    // STAGE 1: Parabolic Flight
+    else if (r.stage === 1) {
+      r.timeline += deltaTime * 0.75;
+      r.vy += r.gravity * deltaTime;
+      r.x += r.vx * deltaTime;
+      r.y += r.vy * deltaTime;
+      r.rotation += 4.0 * deltaTime;
 
-		// background layer behind everything
-		ctx.fillStyle = 'rgba(4, 4, 12, 0.12)';
-		ctx.fillRect(
-			0, 
-			0, 
-			canvas.width, 
-			canvas.height
-		);
+      const maxRadius = 32 * scale;
+      if (r.vy < 0) {
+        if (r.radius < maxRadius) {
+          r.radius += deltaTime * 20 * scale;
+        }
+      } else {
+        r.radius = Math.max(
+          0, 
+          r.radius - deltaTime * 35 * scale
+        );
+      }
 
-		// background image sheet
-		if (
-			bgImage.complete && 
-			bgImage.width > 0
-		) {
-			ctx.save();
-			const bgScaleY = 
-				canvas.width / bgImage.width;
-			const bgScaledHeight = 
-				bgImage.height * bgScaleY;
-			const bgY = 
-				canvas.height - bgScaledHeight;
-			ctx.drawImage(
-				bgImage, 
-				0, 
-				bgY, 
-				canvas.width, 
-				bgScaledHeight
-			);
-			ctx.restore();
-		}
+      if (r.radius > 0.5) {
+        spawnArcBurstCluster(r.x, r.y, r.radius, 3);
 
-		const screenCenterX = canvas.width / 2;
-		const screenCenterY = canvas.height / 2;
-		const globalBoundaryLimit = 
-			Math.max(canvas.width, canvas.height) * 
-			0.24;
+        window.drawSpinnerGraphic(
+          r.x,
+          r.y,
+          r.radius,
+          1.0,
+          r.rotation,
+          r.hue,
+          false
+        );
+      }
 
-		// STAGE 0 central animation, ascend and explode
-		if (rocketStage === 0) {
-			rocketY -= 
-				deltaTime * (canvas.height * 0.65);
-			
-			// Growth math: starts at size 4 near floor,
-			// grows to size 14 near center
-			const rocketProgress = Math.min(
-				1.0, 
-				Math.max(
-					0, 
-					(canvas.height - rocketY) / 
-					(screenCenterY)
-				)
-			);
-			const growingRocketRadius = 
-				4 + (rocketProgress * 10);
-			
-			const targetHue = 
-				roygbivSpectrum[
-					currentSpectrumIndex
-				] || 0;
+      // Extended boundary checks relative to scaled size
+      if (
+        r.timeline >= 3.0 ||
+        (r.vy > 0 && r.radius <= 0) ||
+        r.y < -300 * scale || 
+        r.x < -200 * scale ||
+        r.x > canvas.width + (200 * scale)
+      ) {
+        activeRockets.splice(i, 1);
+      }
+    }
+  }
+}
 
-			// draw growing, static star
-			drawSpinnerGraphic(
-				screenCenterX, 
-				rocketY, 
-				growingRocketRadius, 
-				1.0, 
-				0, 
-				targetHue, 
-				true
-			);
+function updateDebris(deltaTime) {
+  for (let i = activeSpinners.length - 1; i >= 0; i--) {
+    const p = activeSpinners[i];
+    p.vy += p.gravity * deltaTime;
+    p.x += p.vx * deltaTime;
+    p.y += p.vy * deltaTime;
+    p.rotation += p.spinSpeed * deltaTime;
+    p.life -= p.decay * deltaTime;
+    p.alpha = Math.max(0, p.life);
 
-			if (rocketY <= screenCenterY) {
-				rocketStage = 1;
-				centerTimeline = 0;
-			}
-		}
+    if (p.life <= 0) {
+      activeSpinners.splice(i, 1);
+      continue;
+    }
 
-		// track previous frame's rotation angle
-		if (
-			typeof window.previousStarAngle === 
-			'undefined'
-		) {
-			window.previousStarAngle = 0;
-		}
+    window.drawSpinnerGraphic(
+      p.x,
+      p.y,
+      p.radius,
+      p.alpha,
+      p.rotation,
+      p.hue,
+      false
+    );
+  }
+}
 
-		// ==========================================
-		// STAGE 1: PARABOLIC CENTER STAR
-		// ==========================================
-		if (rocketStage === 1) {
-			centerTimeline += 
-				deltaTime * 0.75 * config.speed;
+// ==============================================
+// RENDER LOOP & IMAGE LOCKING
+// ==============================================
 
-			// Animate and draw parabolic star
-			animateCenterStar();
+function drawLockedImage(img) {
+  if (!img.complete || img.naturalWidth === 0) return;
+  
+  // Calculate scaled height to keep full picture locked to the bottom
+  const imgAspectRatio = img.naturalHeight / img.naturalWidth;
+  const drawWidth = canvas.width;
+  const drawHeight = drawWidth * imgAspectRatio;
+  
+  // Draw aligned to the bottom (canvas.height - drawHeight)
+  ctx.drawImage(
+    img, 
+    0, 
+    canvas.height - drawHeight, 
+    drawWidth, 
+    drawHeight
+  );
+}
 
-			// Transition out when growth completes
-			if (centerTimeline >= 1.0) {
-				centerTimeline = 0;
-				rocketStage = 0;
-				rocketY = canvas.height;
+function renderLoop(timestamp) {
+  if (!lastTime) lastTime = timestamp;
+  const deltaTime = Math.min((timestamp - lastTime) / 1000, 0.1);
+  lastTime = timestamp;
 
-				currentSpectrumIndex = 
-					(currentSpectrumIndex + 1) % 
-					roygbivSpectrum.length;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-				triggerCenterMutation();
-			}
-		}
+  // 1. BACKGROUND LAYER (Locked to Bottom)
+  if (bgImg.complete && bgImg.naturalWidth > 0) {
+    drawLockedImage(bgImg);
+  } else {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
 
-		// active falling spinners
-		for (
-			let i = activeSpinners.length - 1; 
-			i >= 0; 
-			i--
-		) {
-			const cell = activeSpinners[i];
-			const activeRunningTime = 
-				now - cell.birthTime;
+  // SPAWN TIMER
+  globalSpawnTimer += deltaTime;
+  if (globalSpawnTimer >= LAUNCH_INTERVAL) {
+    globalSpawnTimer = 0;
+    spawnRocket();
+  }
 
-			if (activeRunningTime < cell.delayOffset) {
-				continue;
-			}
+  // 2. MIDDLE LAYER: ANIMATION
+  updateRockets(deltaTime);
+  updateDebris(deltaTime);
 
-			const physicsAge = 
-				(activeRunningTime - cell.delayOffset) * 
-				0.001;
-			let targetX = 
-				cell.originX + 
-				(cell.velocityX * physicsAge * 60);
-			
-			const verticalVelocityComponent = 
-				cell.velocityY * physicsAge;
-			const gravityComponent = 
-				0.5 * config.gravity * 
-				physicsAge * physicsAge;
-			let targetY = 
-				cell.originY + 
-				((verticalVelocityComponent + 
-					gravityComponent) * 35);
-			
-			let cellFadeFactor = Math.max(
-				0, 
-				1.0 - (physicsAge * 0.48)
-			);
+  // 3. FOREGROUND LAYER (Locked to Bottom)
+  drawLockedImage(fgImg);
 
-			const currentInstantaneousVelocityY = 
-				cell.velocityY + 
-				(config.gravity * physicsAge);
-			const isAscending = 
-				currentInstantaneousVelocityY < 0;
+  requestAnimationFrame(renderLoop);
+}
 
-			if (
-				isAscending && 
-				targetY > (canvas.height / 2)
-			) {
-				cellFadeFactor = 0;
-			}
+// ==============================================
+// INITIALIZATION & DYNAMIC RESPONSIVE SIZING
+// ==============================================
 
-			const dynamicSpinSpeed = 
-				(now * 0.002 * cell.baseSpinMultiplier) + 
-				(Math.abs(
-					currentInstantaneousVelocityY
-				) * 0.012);
-			const dynamicRadius = 
-				cell.radius * 
-				cell.sizeJitter * 
-				(0.95 + Math.sin(now * 0.04 + i) * 0.05);
+function resizeCanvasToImage() {
+  if (!canvas) return;
 
-			drawSpinnerGraphic(
-				targetX,
-				targetY, 
-				dynamicRadius,
-				cellFadeFactor, 
-				dynamicSpinSpeed,
-				cell.baseHue
-			);
+  // Determine width based on parent container or viewport
+  const parentWidth = canvas.parentElement 
+    ? canvas.parentElement.clientWidth 
+    : window.innerWidth;
 
-			if (
-				targetY > canvas.height + 60 || 
-				cellFadeFactor <= 0
-			) {
-				activeSpinners.splice(i, 1);
-			}
-		}
+  // Set canvas render resolution
+  canvas.width = Math.min(parentWidth, window.innerWidth);
 
-		// foreground on top
-		if (
-			fgCannonImage.complete && 
-			fgCannonImage.width > 0
-		) {
-			ctx.save();
-			const fgScaleY = 
-				canvas.width / fgCannonImage.width;
-			const fgScaledHeight = 
-				fgCannonImage.height * fgScaleY;
-			const fgY = 
-				canvas.height - fgScaledHeight;
-			ctx.drawImage(
-				fgCannonImage, 
-				0, 
-				fgY, 
-				canvas.width, 
-				fgScaledHeight
-			);
-			ctx.restore();
-		}
+  // Calculate dynamic scaling ratio relative to base design width
+  scale = canvas.width / DESIGN_WIDTH;
 
-		requestAnimationFrame(renderLoop);
-	}
-	// Kick off initial state and render loop
-	triggerCenterMutation();
-	rocketY = canvas.height;
-	lastTime = performance.now();
-	requestAnimationFrame(renderLoop);
-});
+  // Lock canvas height to background image aspect ratio
+  if (bgImg.complete && bgImg.naturalWidth > 0) {
+    const aspectRatio = bgImg.naturalHeight / bgImg.naturalWidth;
+    canvas.height = canvas.width * aspectRatio;
+  } else {
+    canvas.height = canvas.width * 0.75; // Standard 4:3 fallback
+  }
+
+  screenCenterX = canvas.width / 2;
+  screenCenterY = canvas.height / 2;
+}
+
+function init() {
+  canvas = document.getElementById("canvas");
+  if (!canvas) {
+    console.error("Canvas element #canvas not found!");
+    return;
+  }
+  ctx = canvas.getContext("2d");
+
+  // CSS setup to prevent clipped overflow and ensure clean response
+  canvas.style.overflow = "visible";
+  canvas.style.display = "block";
+  canvas.style.margin = "0 auto";
+
+  window.addEventListener("resize", resizeCanvasToImage);
+
+  if (bgImg.complete) {
+    resizeCanvasToImage();
+  } else {
+    bgImg.onload = resizeCanvasToImage;
+  }
+
+  spawnRocket();
+  requestAnimationFrame(renderLoop);
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
